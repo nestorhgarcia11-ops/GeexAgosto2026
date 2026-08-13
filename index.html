@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Evaluación de estado de salud confidencial de OSTACC y ATACC para afiliados." />
+<meta name="theme-color" content="#167D6E" />
+<meta property="og:title" content="Evaluación de estado de salud" />
+<meta property="og:description" content="Cuestionario confidencial de OSTACC y ATACC." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzE2N0Q2RSIvPjxwYXRoIGQ9Ik0xNiAyNHMtNy00LjItNy05LjJDOSAxMi43IDEwLjcgMTEgMTIuOCAxMWMxLjMgMCAyLjUuNiAzLjIgMS42LjctMSAxLjktMS42IDMuMi0xLjYgMi4xIDAgMy44IDEuNyAzLjggMy44QzIzIDE5LjggMTYgMjQgMTYgMjR6IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+" />
+<title>Evaluación de estado de salud</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Inter:wght@400;500;600&display=swap');
+:root{
+  --ink:#11302E; --bg:#E9F0ED; --card:#fff; --teal:#167D6E; --teal-12:#E2EFEB;
+  --amber:#CF8438; --amber-12:#F6EBDB; --muted:#56635F; --line:#D6E1DD;
+  --green:#2E8B57; --greenb:#E2F0E8; --amb:#B07414; --ambb:#F5E9D2; --red:#BC4838; --redb:#F6E1DD;
+  --fd:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  --fb:'Inter',ui-sans-serif,system-ui,sans-serif;
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:var(--fb);color:var(--ink);background:var(--bg);min-height:100vh;padding:26px 16px 72px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.shell{max-width:680px;margin:0 auto}
+.brandbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-family:var(--fd);font-weight:600;letter-spacing:.02em;font-size:14px;color:var(--teal);text-transform:uppercase}
+.privchip{display:inline-flex;align-items:center;gap:6px;background:var(--teal-12);color:var(--teal);font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px}
+.progress{height:7px;background:#d7e2de;border-radius:999px;overflow:hidden;margin-bottom:20px}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:999px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 26px;box-shadow:0 1px 2px rgba(17,48,46,.04),0 14px 34px -22px rgba(17,48,46,.28);animation:fadeUp .4s cubic-bezier(.2,.7,.2,1) both}
+@media(max-width:540px){.card{padding:22px 18px;border-radius:16px}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.eyebrow .ico{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--teal-12)}
+.h1{font-family:var(--fd);font-weight:600;font-size:30px;line-height:1.12;letter-spacing:-.01em;margin:0 0 6px}
+.h2{font-family:var(--fd);font-weight:600;font-size:22px;line-height:1.15;margin:0 0 4px}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+.lead{color:var(--muted);font-size:15.5px;margin:0 0 18px}
+.subdiv{display:flex;align-items:center;gap:8px;color:var(--teal);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:20px 0 12px}
+.subdiv::before{content:'';width:16px;height:2px;background:var(--teal);border-radius:2px}
+.panel{border-left:3px solid var(--teal);background:var(--teal-12);border-radius:0 12px 12px 0;padding:13px 15px;margin-bottom:12px}
+.panel.alt{border-left-color:var(--amber);background:var(--amber-12)}
+.panel h4{margin:0 0 3px;font-size:14px;font-weight:600}
+.panel p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.45}
+.q{margin:0 0 18px}
+.q > label{display:block;font-weight:500;font-size:15.5px;margin-bottom:9px}
+.q .hint{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-size:14.5px;font-weight:500;padding:9px 15px;border-radius:11px;cursor:pointer;transition:border-color .15s,background .15s,transform .08s;display:inline-flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--teal)} .chip:active{transform:scale(.98)}
+.chip.on{border-color:var(--teal);background:var(--teal);color:#fff}
+.chip .dot{width:13px;height:13px;border-radius:50%;border:1.5px solid #c4d3ce}
+.chip.on .dot{border-color:#fff;background:#fff}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:500;font-size:14.5px;margin-bottom:6px}
+.input{width:100%;font-family:inherit;font-size:15.5px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;outline:none}
+.input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-12)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.grid3,.grid2,.checkgrid{grid-template-columns:1fr}}
+.optcard{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;cursor:pointer;font-size:14px;transition:.15s;text-align:left;width:100%;font-family:inherit;color:var(--ink);line-height:1.35}
+.optcard:hover{border-color:var(--teal)}
+.optcard.on{border-color:var(--teal);background:var(--teal-12)}
+.optcard .bx{flex:0 0 auto;width:20px;height:20px;border-radius:6px;border:1.7px solid #c4d3ce;display:grid;place-items:center;margin-top:1px;color:#fff}
+.optcard.on .bx{background:var(--teal);border-color:var(--teal)}
+.consent{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:13px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s;margin-top:6px}
+.consent.on{border-color:var(--teal);background:var(--teal-12)}
+.box{flex:0 0 auto;width:24px;height:24px;border-radius:7px;border:1.8px solid #c4d3ce;background:#fff;display:grid;place-items:center;margin-top:1px;color:#fff;transition:.15s}
+.consent.on .box{background:var(--teal);border-color:var(--teal)}
+.consent p{margin:0;font-size:14.5px} .consent small{color:var(--muted);font-size:12.5px}
+.toggle{display:inline-flex;align-items:center;gap:9px;font-size:14px;cursor:pointer;user-select:none;background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:9px 13px}
+.toggle .sw{width:38px;height:22px;border-radius:999px;background:#d3ddd9;position:relative;transition:.18s}
+.toggle .sw i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s}
+.toggle.on .sw{background:var(--teal)} .toggle.on .sw i{left:18px}
+.nav{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.btn{appearance:none;font-family:inherit;font-weight:600;font-size:15px;border-radius:12px;padding:13px 20px;cursor:pointer;border:1.5px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .08s,filter .15s,background .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--teal);color:#fff;flex:1;min-width:150px}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-primary:disabled{background:#aebfba;cursor:not-allowed;filter:none}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+.note{display:flex;gap:9px;font-size:13px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:11px;padding:11px 13px;margin-top:12px;line-height:1.45}
+.note svg{flex:0 0 auto;margin-top:1px}
+.note.urg{border-style:solid;border-color:var(--red);background:var(--redb);color:var(--red);font-weight:500}
+.banner{display:flex;gap:10px;align-items:center;background:var(--amber-12);border:1px solid #ecd6b6;border-radius:13px;padding:13px 15px;margin-bottom:16px;font-size:14px}
+.banner.urg{background:var(--redb);border-color:#e6b3aa;color:var(--red)}
+.who{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:-6px 0 14px}
+.who b{color:var(--ink)}
+.scorehero{display:flex;gap:14px;align-items:center;border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.scorehero .num{font-family:var(--fd);font-weight:700;font-size:34px;line-height:1}
+.rrow{display:flex;gap:13px;align-items:flex-start;padding:15px 0;border-top:1px solid var(--line)}
+.rrow .ic{flex:0 0 auto;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--teal-12);color:var(--teal)}
+.rrow h4{margin:0 0 2px;font-size:15.5px;font-weight:600}
+.rrow p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.45}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;margin-top:6px}
+.pill.green{background:var(--greenb);color:var(--green)}
+.pill.amber{background:var(--ambb);color:var(--amb)}
+.pill.red{background:var(--redb);color:var(--red)}
+.deriv{background:var(--teal-12);border-radius:14px;padding:16px 18px;margin-top:18px}
+.deriv h4{margin:0 0 8px;font-size:14.5px;font-weight:600;color:var(--teal)}
+.deriv ul{margin:0;padding-left:18px} .deriv li{font-size:14px;margin-bottom:4px}
+.footnote{font-size:12px;color:var(--muted);text-align:center;margin-top:22px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:#fff;font-size:14px;font-weight:500;padding:12px 18px;border-radius:12px;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);transition:opacity .25s,transform .25s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion: reduce){.card{animation:none}.progress>i{transition:none}}
+@media print{body{background:#fff;padding:0}.nav,.brandbar,.progress{display:none}.card{box-shadow:none;border:none;animation:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brandbar"><span class="brand">OSTACC · ATACC</span><span class="privchip" id="privchip"></span></div>
+  <div class="progress"><i id="bar" style="width:0%"></i></div>
+  <div class="card" id="app"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var P={
+ shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+ lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/><path d="M3.2 12H9l1-2 2 4.5 2-7 1.4 4.5H21"/>',
+ drop:'<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 5 12 2.5C11.5 5 10 7.9 8 9.5S5 13 5 15a7 7 0 0 0 7 7z"/>',
+ scale:'<path d="M12 3v18"/><path d="M4 7h16"/><path d="m7 7-3 6a3 3 0 0 0 6 0L7 7z"/><path d="m17 7-3 6a3 3 0 0 0 6 0l-3-6z"/><path d="M6 21h12"/>',
+ cig:'<path d="M18 12H2v4h16"/><path d="M22 12v4"/><path d="M18 12a2 2 0 0 1 0-4 2 2 0 0 0 0-4"/>',
+ brain:'<path d="M9.5 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 0V5a3 3 0 0 0-3-1z"/><path d="M14.5 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 0"/>',
+ steth:'<path d="M4 3v6a5 5 0 0 0 10 0V3"/><path d="M8 3H4"/><path d="M14 3h-4"/><path d="M9 14v2a5 5 0 0 0 10 0v-1"/><circle cx="20" cy="10" r="2"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M11.5 12.6c.7-.7 1.8-.7 2.5 0 .7-.7 1.8-.7 2.5 0 .7.7.7 1.8 0 2.5L14 17.6l-2.5-2.5c-.7-.7-.7-1.8 0-2.5z"/>',
+ heartHand:'<path d="M11 14h2a2 2 0 0 0 0-4h-3l-4 4"/><path d="m2 15 4-4 3 3"/><path d="M18 12.7 20.3 10a2.4 2.4 0 0 0-3.4-3.4l-.4.4-.4-.4A2.4 2.4 0 0 0 12.7 10l3.3 3.3"/>',
+ smile:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>',
+ apple:'<path d="M12 8c-2-3-6-2-6 2 0 5 3 10 6 10s6-5 6-10c0-4-4-5-6-2z"/><path d="M12 8V4a2 2 0 0 1 2-2"/>',
+ printer:'<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+ rot:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+ cl:'<path d="m15 18-6-6 6-6"/>', cr:'<path d="m9 18 6-6-6-6"/>', check:'<path d="M20 6 9 17l-5-5"/>',
+ alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+ cc:'<path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m9 11 3 3L22 4"/>', circle:'<circle cx="12" cy="12" r="10"/>',
+ linkI:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'
+};
+function ic(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(P[n]||'')+'</svg>';}
+
+var S={};
+function reset(){S={
+ step:'intro', review:false, consent:false,
+ id:{dni:'',fechaNac:'',sexo:''},
+ hta:{told:'',meds:'',fam:'',inactive:'',sys:'',dia:''},
+ med:{peso:'',talla:'',cintura:''},
+ obes:{subio:''},
+ tox:{tabaco:'',cig:'',a1:'',a2:'',a3:'',sust:''},
+ hist:{azucar:'',higado:'',colest:'',colMed:'',famDiab:'',famCVD:'',alarma:[],colo:''},
+ mujer:{pap:'',mamo:'',famCancer:'',vph:'',ciclos:'',embarazos:'',anticon:'',sintomas:[]},
+ animo:{q1:'',q2:'',q3:'',q4:''},
+ comes:{riesgo:[],protector:[]},
+ its:{dx:'',preserv:'',testVIH:'',hepB:'',sintomas:''},
+ cog:{memoria:'',olvidos:'',funcional:'',desor:'',familiar:''}
+};}
+reset();
+var YN=[['si','Sí'],['no','No']];
+var YNS=[['si','Sí'],['no','No'],['ns','No sé']];
+var FREQ=[['','Seleccioná…'],['0','Para nada'],['1','Varios días'],['2','Más de la mitad de los días'],['3','Casi todos los días']];
+
+function edad(f){if(!f)return null;var d=new Date(f);if(isNaN(d))return null;var h=new Date(),e=h.getFullYear()-d.getFullYear(),m=h.getMonth()-d.getMonth();if(m<0||(m===0&&h.getDate()<d.getDate()))e--;return(e>=0&&e<130)?e:null;}
+function sexoLabel(v){return{mujer:'Mujer',varon:'Varón',otro:'Otro',na:'Prefiere no decir'}[v]||'—';}
+function steps(){
+ var s=['intro','hta','historia','peso','toxicos'];
+ if(S.id.sexo!=='varon') s.push('mujer');
+ s.push('animo','comes','its');
+ var e=edad(S.id.fechaNac); if(e!=null&&e>=60) s.push('cognitivo');
+ s.push('resultados'); return s;
+}
+function introOk(){return S.consent && S.id.dni.trim() && S.id.fechaNac && S.id.sexo;}
+
+function auditC(){
+ // AUDIT-C: 3 ítems 0-4. Si Q1='Nunca' (0) -> total 0.
+ var a1=parseInt(S.tox.a1,10);
+ if(isNaN(a1)) return {score:null,pos:false};
+ if(a1===0) return {score:0,pos:false};
+ var a2=parseInt(S.tox.a2,10), a3=parseInt(S.tox.a3,10);
+ var sc=a1+(isNaN(a2)?0:a2)+(isNaN(a3)?0:a3);
+ var umbral=S.id.sexo==='mujer'?3:4;
+ return {score:sc,pos:sc>=umbral};
+}
+function results(){
+ var peso=parseFloat(S.med.peso),talla=parseFloat(S.med.talla),cint=parseFloat(S.med.cintura);
+ var imc=(peso>0&&talla>0)?peso/Math.pow(talla/100,2):null;
+ var e=edad(S.id.fechaNac);
+ // Perímetro de cintura elevado (umbrales por sexo; NCEP/IDF)
+ var cintAlto=false;
+ if(cint>0){ if(S.id.sexo==='mujer') cintAlto=cint>=88; else if(S.id.sexo==='varon') cintAlto=cint>=102; else cintAlto=cint>=94; }
+ // Diabetes ADA-CDC (sin ítem gestacional; se relevan azúcar alta aparte)
+ var agePts=e==null?0:e<40?0:e<50?1:e<60?2:3;
+ var sexPts=S.id.sexo==='varon'?1:0;
+ var famPts=S.hist.famDiab==='cercano'?1:0;
+ var htaPts=S.hta.told==='si'?1:0;
+ var actPts=S.hta.inactive==='si'?1:0;
+ var bmiPts=imc==null?0:imc<25?0:imc<30?1:imc<40?2:3;
+ var dScore=agePts+sexPts+famPts+htaPts+actPts+bmiPts;
+ var dLevel=(dScore>=5||S.hist.azucar==='si')?'elevado':'bajo';
+ // AUDIT-C
+ var ac=auditC();
+ // HTA
+ var hLevel;
+ if(S.hta.told==='si'||S.hta.meds==='si') hLevel='control';
+ else{
+  var sal=S.comes.riesgo.indexOf('sal')>=0;
+  var vida=(S.tox.tabaco==='actual'||ac.pos);
+  var f=0;
+  if(S.hta.fam==='si')f++; if(S.hta.inactive==='si')f++; if(sal)f++;
+  if((imc!=null&&imc>=25)||cintAlto)f++; if(vida)f++;
+  var sys=parseFloat(S.hta.sys),dpr=parseFloat(S.hta.dia);
+  hLevel=(f>=2||sys>=130||dpr>=80)?'evaluar':'bajo';
+ }
+ // Peso/IMC
+ var oLevel='na',imcCat='—';
+ if(imc!=null){ if(imc<18.5){imcCat='Bajo peso';oLevel='info';}else if(imc<25){imcCat='Normal';oLevel='normal';}else if(imc<30){imcCat='Sobrepeso';oLevel='evaluar';}else{imcCat='Obesidad';oLevel='elevado';} }
+ if(cintAlto&&(oLevel==='normal'||oLevel==='na')) oLevel='evaluar';
+ // Historia metabólica/cardíaca
+ var hisFlags=[];
+ if(S.hist.azucar==='si') hisFlags.push('Glucemia elevada informada');
+ if(S.hist.higado==='si') hisFlags.push('Hígado graso');
+ if(S.hist.colest==='alto'||S.hist.colMed==='si') hisFlags.push('Colesterol/triglicéridos elevados');
+ if(S.hist.famCVD==='si') hisFlags.push('Antecedente familiar de infarto/ACV temprano');
+ if(cintAlto) hisFlags.push('Perímetro de cintura elevado');
+ var hisLevel=(S.hist.azucar==='si'||S.hist.colest==='alto'||S.hist.colMed==='si')?'evaluar':(hisFlags.length?'info':'ok');
+ // Colorrectal — ajustado a la edad (USPSTF: 45–75 recomendar; 76–85 individualizar; >85 no de rutina)
+ var coloEstado='na';
+ if(e!=null&&e>=45){
+  if(S.hist.colo==='soaf'||S.hist.colo==='colo') coloEstado='ok';
+  else if(S.hist.colo==='nunca'||S.hist.colo==='indicado'){
+   if(e<=75) coloEstado='pend'; else if(e<=85) coloEstado='indiv';
+  }
+ }
+ // Tóxicos
+ var txFlags=[];
+ if(S.tox.tabaco==='actual') txFlags.push('Tabaquismo activo');
+ if(ac.pos) txFlags.push('Consumo de alcohol de riesgo (AUDIT-C '+ac.score+')');
+ if(S.tox.sust==='actual') txFlags.push('Consumo de sustancias');
+ var tLevel=txFlags.length?'info':'ok';
+ // Ánimo PHQ-4
+ var q=['q1','q2','q3','q4'].map(function(k){return parseInt(S.animo[k],10);});
+ var answered=q.some(function(x){return !isNaN(x);});
+ var phq2=(isNaN(q[0])?0:q[0])+(isNaN(q[1])?0:q[1]);
+ var gad2=(isNaN(q[2])?0:q[2])+(isNaN(q[3])?0:q[3]);
+ var aPos=(phq2>=3||gad2>=3);
+ var aLevel=!answered?'na':(aPos?'evaluar':'bajo');
+ // Alimentación
+ var riesgo=S.comes.riesgo.length, protec=S.comes.protector.length;
+ var eatLevel=riesgo>=2?'info':(riesgo+protec>0?'ok':'na');
+ // Salud de la mujer
+ var mLevel='na',mFlags=[];
+ if(S.id.sexo!=='varon'){
+  if(S.mujer.pap==='mas3'||S.mujer.pap==='nunca') mFlags.push('Control de cuello uterino pendiente');
+  if(S.mujer.mamo==='mas2'||S.mujer.mamo==='nunca') mFlags.push('Mamografía a evaluar');
+  if(S.mujer.famCancer==='si') mFlags.push('Antecedente familiar de cáncer de mama/ovario');
+  var anySint=S.mujer.sintomas.length>0;
+  if(anySint) mFlags.push('Síntomas ginecológicos a evaluar');
+  var mRed=['bulto','sangradoPost'].some(function(x){return S.mujer.sintomas.indexOf(x)>=0;});
+  mLevel=mRed?'evaluar':(mFlags.length?'info':'ok');
+ }
+ // Cognitivo
+ var cLevel='na',cCount=0;
+ if(e!=null&&e>=60){cCount=['memoria','olvidos','funcional','desor','familiar'].filter(function(k){return S.cog[k]==='si';}).length;cLevel=cCount>=2?'evaluar':'bajo';}
+ // BANDERAS ROJAS (aviso urgente)
+ var ALARM={pecho:'Dolor o presión en el pecho',aire:'Falta de aire que apareció de golpe',acv:'Debilidad o dificultad para hablar repentina',vision:'Pérdida de visión repentina',sangreh:'Sangre en la materia fecal o en la orina'};
+ var redFlags=[];
+ (S.hist.alarma||[]).forEach(function(x){ if(ALARM[x]) redFlags.push(ALARM[x]); });
+ if(S.id.sexo!=='varon'){
+  if(S.mujer.sintomas.indexOf('bulto')>=0) redFlags.push('Bulto o cambio reciente en la mama');
+  if(S.mujer.sintomas.indexOf('sangradoPost')>=0) redFlags.push('Sangrado después de la menopausia');
+ }
+ var urgent=redFlags.length>0;
+ // Derivaciones
+ var der=[];function add(x){if(der.indexOf(x)<0)der.push(x);}
+ if(hLevel!=='bajo') add('Clínica médica / cardiología — control de presión arterial');
+ if(dLevel==='elevado'||S.hist.azucar==='si') add('Laboratorio: glucemia en ayunas o HbA1c');
+ if(S.hist.colest==='alto'||S.hist.colMed==='si') add('Laboratorio: perfil lipídico');
+ if(S.hist.famCVD==='si') add('Cardiología — riesgo cardiovascular familiar');
+ if(oLevel==='elevado'||oLevel==='evaluar'||riesgo>=2||cintAlto) add('Nutrición');
+ if(txFlags.length) add('Programa de cesación / consumo problemático');
+ if(mFlags.length) add('Ginecología (control cervical / mamografía)');
+ if(aPos) add('Salud mental / psicología');
+ if(S.its.sintomas==='si') add('Testeo de ITS / infectología');
+ if(cLevel==='evaluar') add('Evaluación cognitiva (clínica / neurología)');
+ if(coloEstado==='pend') add('Tamizaje de cáncer colorrectal (sangre oculta anual o colonoscopía)');
+ else if(coloEstado==='indiv') add('Tamizaje colorrectal: decidir según estado de salud (76–85 años)');
+ if(urgent) der.unshift('CONSULTA PRIORITARIA por señales de alarma');
+ return {imc:imc,imcCat:imcCat,cint:(cint>0?cint:null),cintAlto:cintAlto,dScore:dScore,dIncompleto:imc==null,dLevel:dLevel,hLevel:hLevel,oLevel:oLevel,
+  hisFlags:hisFlags,hisLevel:hisLevel,coloEstado:coloEstado,txFlags:txFlags,tLevel:tLevel,audit:ac,aLevel:aLevel,aPos:aPos,phq2:phq2,gad2:gad2,
+  eatLevel:eatLevel,riesgo:riesgo,protec:protec,mLevel:mLevel,mFlags:mFlags,cLevel:cLevel,cCount:cCount,redFlags:redFlags,urgent:urgent,der:der,edad:e};
+}
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function chips(g,k,opts){var v=S[g][k];return '<div class="chips">'+opts.map(function(o){var on=v===o[0];return '<button type="button" class="chip'+(on?' on':'')+'" data-chip data-g="'+g+'" data-k="'+k+'" data-v="'+o[0]+'"><span class="dot"></span>'+esc(o[1])+'</button>';}).join('')+'</div>';}
+function checks(g,k,opts){var arr=S[g][k];return '<div class="checkgrid">'+opts.map(function(o){var on=arr.indexOf(o[0])>=0;return '<button type="button" class="optcard'+(on?' on':'')+'" data-multi data-g="'+g+'" data-k="'+k+'" data-v="'+o[0]+'"><span class="bx">'+ic('check',13)+'</span><span>'+esc(o[1])+'</span></button>';}).join('')+'</div>';}
+function sel(g,k,opts){return '<select class="input" data-in data-g="'+g+'" data-k="'+k+'">'+opts.map(function(o){return '<option value="'+o[0]+'"'+(S[g][k]===o[0]?' selected':'')+'>'+esc(o[1])+'</option>';}).join('')+'</select>';}
+function textIn(g,k,ph,mode){return '<input class="input" data-in data-g="'+g+'" data-k="'+k+'" inputmode="'+(mode||'text')+'" placeholder="'+esc(ph)+'" value="'+esc(S[g][k])+'"/>';}
+function Q(label,hint,body){return '<div class="q"><label>'+esc(label)+(hint?'<span class="hint">'+esc(hint)+'</span>':'')+'</label>'+body+'</div>';}
+function head(icon,title,sub){var st=steps(),n=st.indexOf(S.step),tot=st.length-2;return '<div class="eyebrow"><span class="ico">'+ic(icon,16)+'</span> Sección '+n+' de '+tot+'</div><h2 class="h2">'+esc(title)+'</h2>'+(sub?'<p class="sub">'+sub+'</p>':'');}
+
+/* ---- pantallas ---- */
+function scrIntro(){
+ var hoy=new Date().toISOString().slice(0,10);
+ return '<h1 class="h1">Evaluación de estado de salud</h1>'+
+ '<p class="lead">Un cuestionario breve y confidencial para conocer tu estado de salud y orientarte hacia los controles que más te convienen.</p>'+
+ '<div class="panel"><h4>¿Por qué esta evaluación?</h4><p>La realiza OSTACC junto con ATACC. Con tus respuestas, el equipo de salud puede orientarte y acompañarte: controles, estudios o derivaciones.</p></div>'+
+ '<div class="panel alt"><h4>Tus respuestas son privadas</h4><p>Son de uso exclusivo del equipo de salud. Recursos Humanos de GEEX no tiene acceso y no se comparte con la empresa.</p></div>'+
+ '<div class="panel"><h4>Participación voluntaria</h4><p>Podés omitir cualquier pregunta que prefieras no responder.</p></div>'+
+ '<h2 class="h2" style="margin-top:22px">Identificación</h2><p class="sub">Solo necesitamos estos tres datos.</p>'+
+ '<div class="grid3">'+
+  '<div class="field"><label>DNI</label>'+textIn('id','dni','Sin puntos','numeric')+'</div>'+
+  '<div class="field"><label>Fecha de nacimiento</label><input class="input" type="date" min="1900-01-01" max="'+hoy+'" data-in data-g="id" data-k="fechaNac" value="'+esc(S.id.fechaNac)+'"/></div>'+
+  '<div class="field"><label>Sexo</label>'+sel('id','sexo',[['','Elegí una opción'],['mujer','Mujer'],['varon','Varón'],['otro','Otro'],['na','Prefiero no decir']])+'</div>'+
+ '</div>'+
+ '<div class="consent'+(S.consent?' on':'')+'" data-consent><span class="box">'+(S.consent?ic('check',15):'')+'</span><p>Leí y comprendí la información y acepto completar esta evaluación de forma voluntaria.<br><small>Al marcar esta casilla dejás constancia de tu conformidad. La marca equivale a tu firma.</small></p></div>'+
+ '<div class="nav"><button class="btn btn-primary" id="cta" data-nav="next"'+(introOk()?'':' disabled')+'>Comenzar '+ic('cr')+'</button></div>'+
+ (introOk()?'':'<div class="note">'+ic('lock',15)+'<span>Completá DNI, fecha de nacimiento, sexo y aceptá la casilla para continuar.</span></div>');
+}
+function scrHta(){
+ return head('heart','Riesgo de hipertensión arterial','El control definitivo se hace midiendo la presión. Acá relevamos factores de riesgo.')+
+ Q('¿Alguna vez un profesional te dijo que tenías la presión alta?','',chips('hta','told',YNS))+
+ Q('¿Tomás medicación para la presión arterial?','',chips('hta','meds',YN))+
+ Q('¿Tenés padre, madre o hermano/a con hipertensión?','',chips('hta','fam',YNS))+
+ Q('¿Hacés menos de 150 minutos de actividad física por semana?','',chips('hta','inactive',YN))+
+ Q('Última presión conocida (opcional)','Si la recordás. Ej.: 120 / 80','<div class="grid2">'+textIn('hta','sys','Sistólica (máx.)','numeric')+textIn('hta','dia','Diastólica (mín.)','numeric')+'</div>');
+}
+function scrHistoria(){
+ var e=edad(S.id.fechaNac);
+ var alarmSel=(S.hist.alarma||[]).length>0;
+ var out=head('file','Tu historia de salud','Lo que ya sabés sobre tu salud.')+
+ Q('¿Alguna vez te dijeron que tenés el azúcar alta en sangre?','En un control, enfermedad o embarazo',chips('hist','azucar',YN))+
+ Q('¿Alguna vez te dijeron que tenés hígado graso?','Esteatosis hepática',chips('hist','higado',YN))+
+ Q('¿Alguna vez te midieron el colesterol o los triglicéridos? ¿Cómo estaban?','',chips('hist','colest',[['nunca','Nunca me los midieron'],['normal','Normales'],['alto','Alguno alto'],['norec','No recuerdo']]))+
+ Q('¿Tomás medicación para bajar el colesterol o los triglicéridos?','',chips('hist','colMed',YN))+
+ Q('¿Alguien de tu familia tiene diabetes?','',chips('hist','famDiab',[['no','No'],['lejano','Sí, pero no padres ni hermanos'],['cercano','Sí, papás, hermanos o hijos']]))+
+ Q('¿Algún familiar tuvo un infarto o un ACV siendo joven?','Antes de los 55 en hombres o de los 65 en mujeres',chips('hist','famCVD',YN));
+ if(e!=null&&e>=45&&e<=85){
+  out+='<div class="subdiv">Chequeo de intestino (colorrectal)</div>'+
+  Q('¿Cuándo fue tu último estudio para detectar cáncer de intestino?','Sangre oculta en materia fecal o colonoscopía',
+    chips('hist','colo',[['soaf','Sangre oculta en el último año'],['colo','Colonoscopía en los últimos 10 años'],['indicado','Me lo indicaron pero no me lo hice'],['nunca','Nunca']]));
+ }
+ out+='<div class="subdiv">Señales de alarma (en estos días)</div>'+
+ Q('¿Tenés en este momento alguno de estos síntomas?','Marcá los que correspondan',
+   checks('hist','alarma',[['pecho','Dolor o presión en el pecho'],['aire','Falta de aire que apareció de golpe'],['acv','Debilidad o dificultad para hablar repentina'],['vision','Pérdida de visión repentina'],['sangreh','Sangre en la materia fecal o en la orina']]));
+ if(alarmSel) out+='<div class="note urg">'+ic('alert',16)+'<span><b>Estos síntomas necesitan atención médica pronta.</b> Ante dolor de pecho o signos de ACV, llamá a emergencias (107 / 911) o acudí a una guardia. No esperes a terminar el cuestionario.</span></div>';
+ return out;
+}
+function scrPeso(){
+ var r=results();var hint=r.imc!=null?('IMC '+r.imc.toFixed(1)+' · '+r.imcCat):'Cargá peso y talla para calcular el IMC';
+ return head('scale','Peso y medidas',r.imc!=null?('Tu IMC es '+r.imc.toFixed(1)+' ('+r.imcCat+').'):'Con el peso y la talla calculamos tu IMC.')+
+ Q('Peso y talla','<span id="imcHint">'+hint+'</span>','<div class="grid2">'+textIn('med','peso','Peso (kg)','decimal')+textIn('med','talla','Talla (cm)','decimal')+'</div>')+
+ Q('Perímetro de cintura (opcional)','En cm, a la altura del ombligo. Ayuda a estimar el riesgo metabólico.','<div class="grid2">'+textIn('med','cintura','Cintura (cm)','decimal')+'<span></span></div>')+
+ Q('¿Aumentaste de peso de forma importante en el último año?','',chips('obes','subio',YN));
+}
+function scrTox(){
+ var bebe=(S.tox.a1!==''&&S.tox.a1!=='0');
+ var out=head('cig','Antecedentes tóxicos','Tabaco, alcohol y otras sustancias.')+
+ Q('¿Fumás o fumaste tabaco?','',chips('tox','tabaco',[['nunca','Nunca'],['ex','Ex fumador/a'],['actual','Fumo actualmente']]))+
+ (S.tox.tabaco==='actual'?Q('¿Cuántos cigarrillos por día, aproximadamente?','',chips('tox','cig',[['menos10','Menos de 10'],['10-20','10–20'],['mas20','Más de 20']])):'')+
+ '<div class="subdiv">Consumo de alcohol (AUDIT-C)</div>'+
+ Q('¿Con qué frecuencia tomás alguna bebida con alcohol?','',chips('tox','a1',[['0','Nunca'],['1','1 vez/mes o menos'],['2','2–4 veces/mes'],['3','2–3 veces/semana'],['4','4 o más veces/semana']]));
+ if(bebe){
+  out+=Q('En un día típico que bebés, ¿cuántos tragos tomás?','1 trago = 1 vaso de vino, 1 lata de cerveza o 1 medida de bebida blanca',chips('tox','a2',[['0','1 o 2'],['1','3 o 4'],['2','5 o 6'],['3','7 a 9'],['4','10 o más']]))+
+  Q('¿Con qué frecuencia tomás 6 o más tragos en una sola ocasión?','',chips('tox','a3',[['0','Nunca'],['1','Menos de 1 vez/mes'],['2','Mensualmente'],['3','Semanalmente'],['4','A diario o casi']]));
+ }
+ out+=Q('¿Consumís o consumiste otras sustancias?','',chips('tox','sust',[['no','No'],['pasado','En el pasado'],['actual','Actualmente']]));
+ return out;
+}
+function scrMujer(){
+ var papO=[['','Seleccioná…'],['menos1','Hace menos de 1 año'],['1-3','Entre 1 y 3 años'],['mas3','Hace más de 3 años'],['nunca','Nunca me lo hice']];
+ var mamoO=[['','Seleccioná…'],['menos1','Hace menos de 1 año'],['1-2','Entre 1 y 2 años'],['mas2','Hace más de 2 años'],['nunca','Nunca / no corresponde']];
+ return head('heartHand','Salud de la mujer','Riesgo de cáncer cervicouterino y de mama, y antecedentes tocoginecológicos.')+
+ '<div class="subdiv">Evaluación de riesgo de cáncer</div>'+
+ Q('¿Cuándo fue tu último control de cuello uterino?','Pap o prueba de VPH',sel('mujer','pap',papO))+
+ '<div class="grid2"><div>'+Q('¿Cuándo fue tu última mamografía?','',sel('mujer','mamo',mamoO))+'</div>'+
+   '<div>'+Q('¿Alguien de tu familia tuvo cáncer de mama o de ovario?','Mamá, hermana o hija',chips('mujer','famCancer',YN))+'</div></div>'+
+ Q('¿Te pusiste la vacuna contra el VPH (virus del papiloma humano)?','',chips('mujer','vph',[['si','Sí'],['no','No'],['ns','No lo sé']]))+
+ '<div class="subdiv">Antecedentes tocoginecológicos</div>'+
+ Q('¿Cómo están tus ciclos?','',chips('mujer','ciclos',[['reg','Regulares'],['irr','Irregulares'],['meno','Ya no menstrúo (más de 1 año)']]))+
+ '<div class="grid2"><div>'+Q('¿Cuántos embarazos tuviste?','',chips('mujer','embarazos',[['0','Ninguno'],['12','1–2'],['3','3 o más']]))+'</div>'+
+   '<div>'+Q('¿Usás anticonceptivos hormonales?','Pastilla, inyección, parche, anillo',chips('mujer','anticon',YN))+'</div></div>'+
+ Q('¿Tenés actualmente alguno de estos síntomas?','Marcá los que apliquen',
+   checks('mujer','sintomas',[['bulto','Bulto o cambio reciente en la mama'],['sangradoAnormal','Sangrado vaginal anormal o entre períodos'],['sangradoPost','Sangrado después de la menopausia'],['dolor','Dolor pélvico persistente'],['abundante','Menstruaciones muy abundantes o prolongadas']]));
+}
+function scrAnimo(){
+ return head('smile','¿Cómo te sentís?','Preguntas sobre tu ánimo y bienestar.')+
+ '<p class="sub" style="margin-top:-6px">En las últimas 2 semanas, ¿con qué frecuencia te molestaron estas cosas?</p>'+
+ Q('1. Poco interés o placer en hacer las cosas','',sel('animo','q1',FREQ))+
+ Q('2. Sentirte decaído/a, triste o sin esperanza','',sel('animo','q2',FREQ))+
+ Q('3. Sentirte nervioso/a, ansioso/a o muy tenso/a','',sel('animo','q3',FREQ))+
+ Q('4. No poder dejar de preocuparte o de darle vueltas a las cosas','',sel('animo','q4',FREQ));
+}
+function scrComes(){
+ return head('apple','¿Cómo comés?','Tus hábitos de alimentación. Marcá únicamente lo que se aplique a tu situación habitual.')+
+ '<div class="subdiv">Hábitos de riesgo</div>'+
+ Q('¿Cuáles de estos tomás o comés seguido?','',
+   checks('comes','riesgo',[['azucar','Bebidas azucaradas (gaseosas, jugos de caja) — más de 3 veces/semana'],['ultra','Ultraprocesados (snacks, fast food, embutidos, panificados) — más de 3 veces/semana'],['carne','Carne roja o fiambres — más de 3 veces/semana'],['sal','Agrega sal a la comida sin probar primero']]))+
+ '<div class="subdiv">Hábitos protectores</div>'+
+ Q('¿Cuáles de estos incluís habitualmente en lo que comés?','',
+   checks('comes','protector',[['pescado','Pescado o mariscos — al menos 2 veces/semana'],['legumbres','Legumbres (lentejas, garbanzos, porotos, arvejas) — al menos 2 veces/semana'],['lacteos','Lácteos o alternativas — al menos una vez al día'],['agua','Agua como bebida principal — 6 a 8 vasos por día']]));
+}
+function scrIts(){
+ return head('steth','Infecciones de transmisión sexual','Sección sensible y confidencial. Responder es opcional.')+
+ Q('¿Alguna vez te diagnosticaron una ITS?','',chips('its','dx',[['si','Sí'],['no','No'],['pnr','Prefiero no decir']]))+
+ Q('¿Usás preservativo en tus relaciones sexuales?','',chips('its','preserv',[['siempre','Siempre'],['aveces','A veces'],['nunca','Nunca']]))+
+ Q('¿Te hiciste alguna vez un test de VIH?','',chips('its','testVIH',YN))+
+ Q('¿Recibiste la vacuna contra la hepatitis B?','',chips('its','hepB',YNS))+
+ Q('¿Tenés algún síntoma actual (flujo, lesiones, ardor)?','',chips('its','sintomas',YN));
+}
+function scrCog(){
+ return head('brain','Memoria y cognición','Solo para personas de 60 años o más.')+
+ Q('¿Sentís que tu memoria empeoró en el último tiempo?','',chips('cog','memoria',YNS))+
+ Q('¿Olvidás con frecuencia citas, nombres o dónde dejaste las cosas?','',chips('cog','olvidos',YN))+
+ Q('¿Tuviste dificultades para manejar dinero, medicación o trámites?','',chips('cog','funcional',YN))+
+ Q('¿Te desorientaste en lugares conocidos?','',chips('cog','desor',YN))+
+ Q('¿Algún familiar notó cambios en tu memoria o conducta?','',chips('cog','familiar',YN))+
+ '<div class="note">'+ic('alert',15)+'<span>Si surgen respuestas afirmativas, el equipo de salud puede aplicar un test breve (Mini-Cog / MMSE).</span></div>';
+}
+function pill(l){var m={bajo:['green','Riesgo bajo'],normal:['green','En rango'],evaluar:['amber','A evaluar'],control:['red','Control indicado'],elevado:['red','Riesgo elevado'],info:['amber','Revisar'],ok:['green','Sin alertas'],na:['green','No corresponde']};var a=m[l]||['amber','Revisar'],i=a[0]==='green'?'cc':a[0]==='red'?'alert':'circle';return '<span class="pill '+a[0]+'">'+ic(i,13)+' '+a[1]+'</span>';}
+function row(icon,t,lv,p){return '<div class="rrow"><span class="ic">'+ic(icon,19)+'</span><div style="flex:1"><h4>'+esc(t)+'</h4><p>'+esc(p)+'</p>'+pill(lv)+'</div></div>';}
+function htaMsg(l){return l==='control'?'Ya tenés diagnóstico o tratamiento: seguí los controles con tu médico/a.':l==='evaluar'?'Presentás factores de riesgo: conviene medir y controlar la presión.':'Sin factores de riesgo destacados. Controlá la presión periódicamente.';}
+function scrRes(){
+ var r=results(),e=r.edad;
+ var hb=r.dLevel==='elevado'?'var(--redb)':'var(--greenb)', hn=r.dLevel==='elevado'?'var(--red)':'var(--green)';
+ var out='';
+ if(r.urgent) out+='<div class="banner urg">'+ic('alert',18)+'<span><b>Señales de alarma.</b> '+esc(r.redFlags.join(' · '))+'. Consultá a una guardia o llamá a emergencias (107 / 911) lo antes posible.</span></div>';
+ if(S.review) out+='<div class="banner">'+ic('shield',18)+'<span>Resultado compartido para revisión del equipo de salud.</span></div>';
+ out+='<div class="eyebrow"><span class="ico">'+ic('file',16)+'</span> Resumen</div><h2 class="h2">'+(S.review?'Evaluación del afiliado':'Tu orientación de salud')+'</h2>';
+ out+='<p class="sub">Tamizaje orientativo, no diagnóstico. El equipo de salud revisará las respuestas.</p>';
+ out+='<div class="who"><span>DNI: <b>'+esc(S.id.dni||'—')+'</b></span><span>Edad: <b>'+(e==null?'—':e)+'</b></span><span>Sexo: <b>'+esc(sexoLabel(S.id.sexo))+'</b></span></div>';
+ out+='<div class="scorehero" style="background:'+hb+'"><div class="num" style="color:'+hn+'">'+r.dScore+'</div><div><strong style="font-size:15px">Puntaje de riesgo de diabetes (ADA–CDC)</strong><div style="font-size:13.5px;color:var(--muted);margin-top:2px">'+(r.dLevel==='elevado'?'Riesgo elevado. Se sugiere glucemia en ayunas o HbA1c.':'Riesgo bajo. Mantené controles habituales.')+'</div></div></div>';
+ out+=row('heart','Hipertensión arterial',r.hLevel,htaMsg(r.hLevel));
+ out+=row('drop','Diabetes tipo 2',r.dLevel,(r.dIncompleto?'Cargá peso y talla para un puntaje completo. ':'')+(r.dLevel==='elevado'?'Se sugiere control de glucemia.':'Riesgo bajo según el cuestionario.'));
+ var pesoMsg=r.imc!=null?('IMC '+r.imc.toFixed(1)+' — '+r.imcCat+'.'):'Sin datos de peso/talla.';
+ if(r.cint!=null) pesoMsg+=' Cintura '+r.cint+' cm'+(r.cintAlto?' (elevada)':'')+'.';
+ out+=row('scale','Peso y medidas',r.oLevel,pesoMsg);
+ out+=row('file','Tu historia de salud',r.hisLevel,r.hisFlags.length?r.hisFlags.join(' · '):'Sin antecedentes destacados.');
+ if(r.coloEstado==='pend') out+=row('file','Tamizaje colorrectal','evaluar','Conviene realizar sangre oculta anual o colonoscopía.');
+ else if(r.coloEstado==='indiv') out+=row('file','Tamizaje colorrectal','info','Entre 76 y 85 años se decide caso por caso con tu médico/a.');
+ else if(r.coloEstado==='ok') out+=row('file','Tamizaje colorrectal','ok','Estudios de intestino al día.');
+ var txMsg=r.txFlags.length?r.txFlags.join(' · '):'Sin alertas relevantes.';
+ if(r.audit.score!=null&&!r.audit.pos) txMsg+=(r.txFlags.length?'':' ')+' (AUDIT-C '+r.audit.score+')';
+ out+=row('cig','Antecedentes tóxicos',r.tLevel,txMsg);
+ if(S.id.sexo!=='varon') out+=row('heartHand','Salud de la mujer',r.mLevel,r.mFlags.length?r.mFlags.join(' · '):'Controles al día, sin síntomas.');
+ out+=row('smile','Ánimo y bienestar',r.aLevel,r.aLevel==='na'?'Sin responder.':(r.aPos?'Podría beneficiarte una consulta de salud mental.':'Sin señales de alarma.'));
+ out+=row('apple','Alimentación',r.eatLevel,r.eatLevel==='na'?'Sin responder.':(r.riesgo>=2?'Predominan hábitos de riesgo: orientación nutricional recomendada.':'Hábitos aceptables.'));
+ out+=row('steth','ITS',S.its.sintomas==='si'?'evaluar':'ok',S.its.sintomas==='si'?'Síntomas actuales: conviene consultar.':'Sin alertas.');
+ if(e!=null&&e>=60) out+=row('brain','Memoria y cognición',r.cLevel,r.cCount>=2?'Conviene una evaluación cognitiva.':'Sin señales de alarma.');
+ if(r.der.length) out+='<div class="deriv"><h4>Derivaciones y estudios sugeridos</h4><ul>'+r.der.map(function(d){return '<li>'+esc(d)+'</li>';}).join('')+'</ul></div>';
+ if(S.review){
+  out+='<div class="nav"><button class="btn btn-ghost" data-act="print">'+ic('printer',17)+' Imprimir / PDF</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-primary" data-act="new">'+ic('rot',17)+' Nueva</button></div>';
+ }else{
+  out+='<div class="nav"><button class="btn btn-primary" data-act="link">'+ic('linkI',17)+' Enviar al equipo de salud</button></div>'+
+   '<div class="nav" style="margin-top:10px"><button class="btn btn-ghost" data-act="print">'+ic('printer',17)+' Imprimir / PDF</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-ghost" data-act="new">'+ic('rot',17)+' Reiniciar</button></div>'+
+   '<div class="note">'+ic('lock',15)+'<span>“Enviar al equipo de salud” genera un enlace con tus respuestas para que lo abra un profesional. Contiene datos personales: compartilo solo con OSTACC.</span></div>';
+ }
+ out+='<p class="footnote">'+ic('lock',12)+' Información confidencial de OSTACC y ATACC. No se comparte con la empresa.</p>';
+ return out;
+}
+
+var SCR={intro:scrIntro,hta:scrHta,historia:scrHistoria,peso:scrPeso,toxicos:scrTox,mujer:scrMujer,animo:scrAnimo,comes:scrComes,its:scrIts,cognitivo:scrCog,resultados:scrRes};
+function go(dir){var st=steps(),i=st.indexOf(S.step),n=i+dir;if(n>=0&&n<st.length){S.step=st[n];render();window.scrollTo({top:0,behavior:'smooth'});}}
+function render(){
+ var app=document.getElementById('app');
+ var html=(SCR[S.step]||scrIntro)();
+ if(S.step!=='intro'&&S.step!=='resultados') html+='<div class="nav"><button class="btn btn-ghost" data-nav="prev">'+ic('cl')+' Atrás</button><button class="btn btn-primary" data-nav="next">Continuar '+ic('cr')+'</button></div>';
+ app.innerHTML=html;
+ var st=steps(),i=Math.max(0,st.indexOf(S.step)),pct=S.step==='resultados'?100:Math.round(i/(st.length-1)*100);
+ document.getElementById('bar').style.width=pct+'%';
+ document.getElementById('privchip').innerHTML=ic('shield',14)+' Confidencial';
+}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2600);}
+function makeLink(){
+ var pay={id:S.id,hta:S.hta,med:S.med,obes:S.obes,tox:S.tox,hist:S.hist,mujer:S.mujer,animo:S.animo,comes:S.comes,its:S.its,cog:S.cog};
+ var b64=btoa(unescape(encodeURIComponent(JSON.stringify(pay))));
+ var url=location.origin+location.pathname+'#r='+b64;
+ if(navigator.share) navigator.share({title:'Evaluación de estado de salud',text:'Resultado para el equipo de salud.',url:url}).catch(function(){});
+ else if(navigator.clipboard) navigator.clipboard.writeText(url).then(function(){toast('Enlace copiado al portapapeles');},function(){prompt('Copiá este enlace:',url);});
+ else prompt('Copiá este enlace:',url);
+ location.hash='r='+b64;
+}
+function downloadJSON(){
+ var r=results();
+ var pay={
+  meta:{herramienta:'Evaluación de estado de salud OSTACC/ATACC',version:2,fecha:new Date().toISOString()},
+  afiliado:{dni:S.id.dni,fechaNacimiento:S.id.fechaNac,sexo:S.id.sexo,edad:r.edad},
+  respuestas:{hta:S.hta,medidas:S.med,peso:S.obes,toxicos:S.tox,historia:S.hist,mujer:(S.id.sexo!=='varon'?S.mujer:null),animo:S.animo,alimentacion:S.comes,its:S.its,cognitivo:((r.edad!=null&&r.edad>=60)?S.cog:null)},
+  resultados:{
+   imc:r.imc?Number(r.imc.toFixed(1)):null, imcCategoria:r.imcCat, cintura:r.cint, cinturaElevada:r.cintAlto,
+   diabetesADA:{puntaje:r.dScore, nivel:r.dLevel}, hipertensionNivel:r.hLevel,
+   auditC:{puntaje:r.audit.score, positivo:r.audit.pos},
+   phq2:r.phq2, gad2:r.gad2, animoNivel:r.aLevel,
+   historiaNivel:r.hisLevel, historiaBanderas:r.hisFlags, colorrectalEstado:r.coloEstado,
+   toxicosBanderas:r.txFlags, alimentacionNivel:r.eatLevel,
+   mujerNivel:r.mLevel, mujerBanderas:r.mFlags,
+   cognitivoNivel:r.cLevel, banderasRojas:r.redFlags, urgente:r.urgent,
+   derivaciones:r.der
+  }
+ };
+ var blob=new Blob([JSON.stringify(pay,null,2)],{type:'application/json'});
+ var url=URL.createObjectURL(blob);
+ var a=document.createElement('a');
+ a.href=url; a.download='evaluacion_'+(S.id.dni||'sindni')+'_'+new Date().toISOString().slice(0,10)+'.json';
+ document.body.appendChild(a); a.click(); document.body.removeChild(a);
+ setTimeout(function(){URL.revokeObjectURL(url);},1000);
+ toast('Archivo JSON descargado');
+}
+var app=document.getElementById('app');
+app.addEventListener('click',function(e){
+ var c=e.target.closest('[data-chip]'); if(c){S[c.dataset.g][c.dataset.k]=c.dataset.v;render();return;}
+ var mu=e.target.closest('[data-multi]'); if(mu){var arr=S[mu.dataset.g][mu.dataset.k],v=mu.dataset.v,ix=arr.indexOf(v);if(ix>=0)arr.splice(ix,1);else arr.push(v);render();return;}
+ var t=e.target.closest('[data-toggle]'); if(t){S[t.dataset.g][t.dataset.k]=!S[t.dataset.g][t.dataset.k];render();return;}
+ if(e.target.closest('[data-consent]')){S.consent=!S.consent;render();return;}
+ var nav=e.target.closest('[data-nav]'); if(nav){if(nav.dataset.nav==='next'){if(S.step==='intro'&&!introOk())return;go(1);}else go(-1);return;}
+ var a=e.target.closest('[data-act]'); if(a){var k=a.dataset.act;if(k==='print')window.print();else if(k==='link')makeLink();else if(k==='json')downloadJSON();else if(k==='new'){location.hash='';reset();render();}return;}
+});
+app.addEventListener('input',function(e){
+ var el=e.target.closest('[data-in]'); if(!el)return; if(el.tagName==='SELECT')return;
+ var g=el.dataset.g,k=el.dataset.k,val=el.value;
+ if(k==='dni') val=val.replace(/[^\d]/g,'');
+ if(g==='med'||k==='sys'||k==='dia') val=val.replace(/[^\d.]/g,'');
+ S[g][k]=val; if(el.value!==val) el.value=val;
+ if(g==='id'){var cta=document.getElementById('cta');if(cta)cta.disabled=!introOk();}
+ if(g==='med'){var h=document.getElementById('imcHint');if(h){var r=results();h.textContent=r.imc!=null?('IMC '+r.imc.toFixed(1)+' · '+r.imcCat):'Cargá peso y talla para calcular el IMC';}}
+});
+app.addEventListener('change',function(e){
+ var el=e.target.closest('[data-in]'); if(!el)return;
+ S[el.dataset.g][el.dataset.k]=el.value;
+ if(el.dataset.g==='id'){var cta=document.getElementById('cta');if(cta)cta.disabled=!introOk();}
+});
+function loadFromHash(){var m=location.hash.match(/r=([^&]+)/);if(!m)return;try{var d=JSON.parse(decodeURIComponent(escape(atob(m[1]))));['id','hta','med','obes','tox','hist','mujer','animo','comes','its','cog'].forEach(function(g){if(d[g])S[g]=Object.assign(S[g],d[g]);});S.review=true;S.step='resultados';}catch(err){}}
+loadFromHash();
+render();
+</script>
+</body>
+</html>
