@@ -102,6 +102,18 @@ body{font-family:var(--fb);color:var(--ink);background:var(--bg);min-height:100v
 .deriv h4{margin:0 0 8px;font-size:14.5px;font-weight:600;color:var(--teal)}
 .deriv ul{margin:0;padding-left:18px} .deriv li{font-size:14px;margin-bottom:4px}
 .footnote{font-size:12px;color:var(--muted);text-align:center;margin-top:22px;line-height:1.5}
+.eyewrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+@media(max-width:520px){.eyewrap{grid-template-columns:1fr}}
+.eyecard{border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.eyecard h5{margin:0 0 8px;font-size:13.5px;font-weight:600}
+.eyeimg{min-height:150px;border-radius:10px;background:#eef3f1;display:grid;place-items:center;overflow:hidden;margin-bottom:8px;color:var(--muted);font-size:12.5px}
+.eyeimg img{width:100%;height:100%;max-height:220px;object-fit:contain;display:block}
+.eyebtns{display:flex;gap:8px;justify-content:center}
+.eyebtn{font-family:inherit;font-size:13px;font-weight:600;border-radius:9px;padding:8px 12px;cursor:pointer;border:1.5px solid var(--line);background:#fff;color:var(--teal)}
+.eyebtn:hover{border-color:var(--teal)}
+.eyebtn input{display:none}
+.eyetext{width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;outline:none;resize:vertical;min-height:96px;margin-top:12px}
+.eyetext:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-12)}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:#fff;font-size:14px;font-weight:500;padding:12px 18px;border-radius:12px;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);transition:opacity .25s,transform .25s;z-index:50;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion: reduce){.card{animation:none}.progress>i{transition:none}}
@@ -141,22 +153,99 @@ function ic(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 
 var S={};
 function reset(){S={
  step:'intro', review:false, consent:false,
- id:{dni:'',fechaNac:'',sexo:''},
+ id:{dni:'',fechaNac:'',sexo:'',email:''},
  hta:{told:'',meds:'',fam:'',inactive:'',sys:'',dia:''},
- med:{peso:'',talla:'',cintura:''},
+ med:{peso:'',talla:'',cintura:'',colesterol:''},
  obes:{subio:''},
  tox:{tabaco:'',cig:'',a1:'',a2:'',a3:'',sust:''},
- hist:{azucar:'',higado:'',colest:'',colMed:'',famDiab:'',famCVD:'',alarma:[],colo:''},
+ hist:{azucar:'',higado:'',colest:'',colMed:'',famDiab:'',famCVD:'',diabetes:'',alarma:[],colo:''},
  mujer:{pap:'',mamo:'',famCancer:'',vph:'',ciclos:'',embarazos:'',anticon:'',sintomas:[]},
  animo:{q1:'',q2:'',q3:'',q4:''},
  comes:{riesgo:[],protector:[]},
  its:{dx:'',preserv:'',testVIH:'',hepB:'',sintomas:''},
- cog:{memoria:'',olvidos:'',funcional:'',desor:'',familiar:''}
+ cog:{memoria:'',olvidos:'',funcional:'',desor:'',familiar:''},
+ ojos:{od:'',oi:'',texto:''}
 };}
 reset();
 var YN=[['si','Sí'],['no','No']];
 var YNS=[['si','Sí'],['no','No'],['ns','No sé']];
 var FREQ=[['','Seleccioná…'],['0','Para nada'],['1','Varios días'],['2','Más de la mitad de los días'],['3','Casi todos los días']];
+
+/* ===== Globorisk-LAC (office-based, recalibrado Argentina) =====
+   Fuente: CC-LAC, Lancet Reg Health Am 2022 (mmc3.pdf, carta de Argentina).
+   Riesgo de ECV a 10 años (%). Filas = PAS [120,140,160,180]; columnas = IMC [20,25,30,35,40]. */
+var GB={
+ mujer:{ns:{
+  '40':[[1,1,2,2,3],[2,2,3,4,5],[3,4,5,7,9],[6,7,10,12,16]],
+  '45':[[1,2,2,3,4],[2,3,4,5,6],[4,5,7,9,11],[7,9,11,14,18]],
+  '50':[[2,2,3,4,5],[3,4,5,6,8],[5,6,8,11,13],[8,10,13,17,21]],
+  '55':[[2,3,4,5,7],[4,5,7,9,11],[6,8,11,13,17],[10,13,16,21,26]],
+  '60':[[3,5,6,8,10],[5,7,9,12,15],[8,11,14,17,22],[13,16,20,25,31]],
+  '65':[[5,7,9,12,15],[8,10,13,17,21],[12,15,19,24,29],[17,21,27,33,40]],
+  '70':[[9,11,14,18,22],[12,15,19,24,30],[17,21,26,33,40],[23,29,35,43,51]]},
+ sm:{
+  '40':[[2,3,4,5,6],[3,4,5,7,8],[5,7,9,11,15],[10,12,16,20,24]],
+  '45':[[2,3,4,5,6],[4,5,7,9,11],[7,9,11,14,18],[11,14,18,23,28]],
+  '50':[[3,4,5,6,8],[5,6,8,11,14],[8,11,13,17,21],[13,17,21,26,32]],
+  '55':[[4,5,7,9,11],[7,9,11,14,18],[11,13,17,21,26],[16,20,26,32,39]],
+  '60':[[6,8,10,12,16],[9,12,15,19,23],[14,17,22,27,33],[20,25,31,38,46]],
+  '65':[[9,12,15,18,23],[13,17,21,26,32],[19,24,29,36,43],[26,33,40,48,57]],
+  '70':[[14,18,22,28,34],[19,24,30,37,44],[26,33,40,48,56],[35,43,51,60,69]]}},
+ varon:{ns:{
+  '40':[[1,2,2,3,4],[2,3,4,6,7],[5,6,8,10,12],[8,10,13,17,21]],
+  '45':[[2,3,4,5,7],[4,5,7,9,11],[7,9,11,14,18],[11,14,18,23,28]],
+  '50':[[3,4,5,7,9],[5,7,9,11,14],[9,11,14,18,22],[14,17,22,27,34]],
+  '55':[[4,5,7,9,11],[7,8,11,14,17],[10,13,17,21,26],[16,20,25,31,37]],
+  '60':[[5,6,8,11,14],[8,10,12,16,20],[11,14,18,23,28],[17,21,26,32,40]],
+  '65':[[6,7,10,12,16],[8,11,14,17,22],[12,16,20,24,30],[17,22,27,34,41]],
+  '70':[[8,10,12,16,20],[11,13,17,21,26],[15,18,23,29,35],[20,25,31,38,45]]},
+ sm:{
+  '40':[[2,3,4,5,6],[3,5,6,8,10],[6,8,10,13,17],[11,14,17,22,27]],
+  '45':[[3,4,5,7,9],[5,7,9,12,15],[9,12,15,19,24],[15,19,24,29,36]],
+  '50':[[4,6,7,10,12],[7,9,12,15,19],[12,15,19,24,29],[18,23,29,35,43]],
+  '55':[[6,7,10,12,15],[9,12,15,18,23],[14,18,22,27,34],[21,26,32,39,47]],
+  '60':[[7,9,11,14,18],[10,13,17,21,26],[15,19,24,30,37],[22,28,34,41,50]],
+  '65':[[8,10,13,16,21],[12,15,18,23,29],[16,21,26,32,39],[23,29,35,43,51]],
+  '70':[[10,13,17,21,26],[14,18,22,28,34],[19,24,30,37,45],[26,32,39,47,56]]}}
+};
+function globoriskAR(sexo,edad,smoker,sbp,bmi){
+ if(sexo!=='mujer'&&sexo!=='varon') return {status:'sexo'};
+ if(edad==null||edad<40||edad>74) return {status:'edad'};
+ if(!(sbp>0)) return {status:'sbp'};
+ if(!(bmi>0)) return {status:'bmi'};
+ var band=edad<45?'40':edad<50?'45':edad<55?'50':edad<60?'55':edad<65?'60':edad<70?'65':'70';
+ var M=GB[sexo][smoker?'sm':'ns'][band];
+ var sax=[120,140,160,180], bax=[20,25,30,35,40];
+ var s=Math.max(120,Math.min(180,sbp)), b=Math.max(20,Math.min(40,bmi));
+ function br(ax,v){var i=0;while(i<ax.length-2&&v>ax[i+1])i++;return i;}
+ var si=br(sax,s), bi=br(bax,b);
+ var ts=(s-sax[si])/(sax[si+1]-sax[si]), tb=(b-bax[bi])/(bax[bi+1]-bax[bi]);
+ var v0=M[si][bi]+(M[si][bi+1]-M[si][bi])*tb;
+ var v1=M[si+1][bi]+(M[si+1][bi+1]-M[si+1][bi])*tb;
+ return {status:'ok', pct:v0+(v1-v0)*ts};
+}
+function cvCat(p){return p<10?'bajo':p<20?'moderado':p<30?'alto':'muy alto';}
+function cvLevel(p){return p<10?'bajo':p<20?'evaluar':'elevado';}
+var GBLAB={mujer:{nd:{ns:{'40':[[1,1,1,1,2],[2,2,2,3,3],[3,4,4,5,6],[6,7,8,9,10]],'45':[[1,1,2,2,2],[2,3,3,4,4],[4,5,5,6,7],[7,8,9,10,11]],'50':[[2,2,2,3,3],[3,4,4,5,5],[5,6,7,7,8],[8,9,10,12,13]],'55':[[3,3,3,4,4],[4,5,5,6,7],[6,7,8,9,10],[10,11,12,14,16]],'60':[[4,4,5,5,6],[6,6,7,8,9],[8,9,11,12,13],[12,14,16,17,19]],'65':[[6,6,7,8,9],[8,9,10,12,13],[12,13,15,16,18],[16,18,20,23,25]],'70':[[9,10,11,13,14],[12,14,15,17,19],[17,19,21,23,26],[22,25,27,30,34]]},sm:{'40':[[2,2,2,3,3],[3,4,4,5,5],[6,6,7,8,9],[10,11,12,14,15]],'45':[[2,3,3,3,4],[4,5,5,6,7],[7,8,9,10,11],[11,12,14,16,17]],'50':[[3,4,4,5,5],[5,6,7,8,9],[8,9,11,12,13],[13,15,16,18,21]],'55':[[4,5,6,6,7],[7,8,9,10,11],[10,12,13,15,16],[16,17,20,22,24]],'60':[[6,7,8,9,10],[9,10,12,13,15],[13,15,17,19,21],[19,21,24,27,29]],'65':[[9,10,12,13,15],[13,15,16,18,21],[18,20,23,25,28],[25,28,31,34,38]],'70':[[14,16,18,20,22],[19,21,24,26,29],[25,28,31,34,38],[33,37,40,44,48]]}},d:{ns:{'40':[[2,3,3,4,4],[4,5,6,6,7],[8,9,10,11,12],[13,14,16,18,20]],'45':[[3,4,4,5,5],[5,6,7,8,9],[9,10,12,13,15],[15,16,18,20,23]],'50':[[4,5,6,6,7],[7,8,9,10,12],[11,13,14,16,18],[17,19,22,24,27]],'55':[[6,7,8,9,10],[9,10,12,13,15],[14,16,17,19,22],[21,23,25,28,31]],'60':[[8,9,11,12,13],[12,14,15,17,19],[18,20,22,25,27],[25,28,31,34,38]],'65':[[12,14,16,17,20],[17,19,22,24,27],[24,27,29,33,36],[32,36,39,43,47]],'70':[[19,21,23,26,29],[25,28,31,34,37],[33,36,40,44,48],[42,46,50,55,59]]},sm:{'40':[[4,5,5,6,7],[7,8,9,10,12],[12,14,15,17,19],[20,22,25,28,30]],'45':[[5,6,7,8,9],[9,10,11,13,14],[14,16,18,20,22],[23,25,28,31,34]],'50':[[7,8,9,10,12],[11,13,14,16,18],[18,20,22,24,27],[27,29,33,36,40]],'55':[[10,11,12,14,15],[15,16,18,20,23],[22,24,27,30,33],[31,34,38,41,45]],'60':[[13,15,17,19,21],[19,21,24,26,29],[27,30,33,37,40],[37,41,45,49,53]],'65':[[19,22,24,27,30],[27,29,33,36,40],[36,39,43,47,51],[47,51,55,60,64]],'70':[[28,31,35,38,42],[37,41,45,49,53],[47,51,56,60,65],[59,63,67,72,76]]}}},varon:{nd:{ns:{'40':[[1,2,2,2,3],[3,3,4,4,5],[5,6,6,7,8],[8,10,11,12,14]],'45':[[2,3,3,4,4],[4,5,6,6,7],[7,8,9,10,12],[12,13,15,17,19]],'50':[[4,4,5,5,6],[6,7,7,8,9],[9,10,12,13,15],[14,16,18,20,22]],'55':[[4,5,6,7,7],[7,8,9,10,11],[11,12,14,15,17],[16,18,20,23,25]],'60':[[5,6,7,8,9],[8,9,10,11,13],[12,13,15,17,19],[17,19,21,24,26]],'65':[[6,7,8,9,10],[9,10,11,13,14],[13,14,16,18,20],[18,20,22,25,27]],'70':[[8,9,10,11,13],[11,12,14,15,17],[15,17,19,21,23],[20,22,25,28,30]]},sm:{'40':[[2,3,3,3,4],[4,5,5,6,7],[7,8,9,10,11],[12,13,15,17,19]],'45':[[4,4,5,5,6],[6,7,8,9,10],[10,11,13,14,16],[16,18,20,22,25]],'50':[[5,6,6,7,8],[8,9,10,12,13],[13,14,16,18,20],[19,22,24,27,30]],'55':[[6,7,8,9,10],[10,11,12,14,16],[15,17,19,21,23],[22,24,27,30,33]],'60':[[7,8,10,11,12],[11,12,14,16,18],[16,18,20,22,25],[23,26,29,32,35]],'65':[[9,10,11,12,14],[12,14,15,17,19],[17,19,22,24,27],[24,27,30,33,36]],'70':[[11,12,14,15,17],[15,17,19,21,23],[20,22,25,28,31],[27,30,33,36,40]]}},d:{ns:{'40':[[3,4,4,5,6],[6,7,7,8,9],[10,11,12,14,16],[16,18,20,23,25]],'45':[[5,6,7,8,9],[9,10,11,12,14],[14,16,18,20,22],[22,24,27,30,33]],'50':[[7,8,9,10,12],[11,13,14,16,18],[18,20,22,24,27],[26,29,32,36,39]],'55':[[9,10,11,13,14],[14,15,17,19,21],[20,23,25,28,31],[30,33,36,40,43]],'60':[[11,12,13,15,17],[15,17,19,22,24],[22,25,27,30,33],[31,34,38,41,45]],'65':[[12,14,15,17,19],[17,19,21,24,26],[24,26,29,32,36],[32,35,39,43,47]],'70':[[15,17,19,21,23],[20,23,25,28,31],[27,30,33,37,40],[36,39,43,47,51]]},sm:{'40':[[5,5,6,7,8],[8,9,10,12,13],[14,15,17,19,21],[22,24,27,30,33]],'45':[[7,8,9,11,12],[12,13,15,17,19],[19,21,24,26,29],[29,32,36,39,43]],'50':[[10,11,13,14,16],[16,17,19,22,24],[24,26,29,32,35],[35,38,42,46,50]],'55':[[12,14,16,18,20],[19,21,23,26,29],[27,30,33,37,40],[39,42,46,50,55]],'60':[[14,16,18,20,23],[21,23,26,29,32],[29,33,36,39,43],[40,44,48,52,57]],'65':[[17,19,21,23,26],[23,26,28,31,35],[31,35,38,42,46],[42,46,50,54,58]],'70':[[20,23,25,28,31],[27,30,33,37,40],[36,39,43,47,51],[46,50,54,58,63]]}}}};
+
+function cholMmol(mg){return mg/38.67;}
+function globoriskLabAR(sexo,edad,diab,smoker,sbp,cholMg){
+ if(sexo!=='mujer'&&sexo!=='varon') return {status:'sexo'};
+ if(edad==null||edad<40||edad>74) return {status:'edad'};
+ if(!(sbp>0)) return {status:'sbp'};
+ if(!(cholMg>0)) return {status:'chol'};
+ var band=edad<45?'40':edad<50?'45':edad<55?'50':edad<60?'55':edad<65?'60':edad<70?'65':'70';
+ var M=GBLAB[sexo][diab?'d':'nd'][smoker?'sm':'ns'][band];
+ var sax=[120,140,160,180], cax=[3,4,5,6,7];
+ var s=Math.max(120,Math.min(180,sbp)), c=Math.max(3,Math.min(7,cholMmol(cholMg)));
+ function br(ax,v){var i=0;while(i<ax.length-2&&v>ax[i+1])i++;return i;}
+ var si=br(sax,s), ci=br(cax,c);
+ var ts=(s-sax[si])/(sax[si+1]-sax[si]), tc=(c-cax[ci])/(cax[ci+1]-cax[ci]);
+ var v0=M[si][ci]+(M[si][ci+1]-M[si][ci])*tc;
+ var v1=M[si+1][ci]+(M[si+1][ci+1]-M[si+1][ci])*tc;
+ return {status:'ok', pct:v0+(v1-v0)*ts};
+}
+
 
 function edad(f){if(!f)return null;var d=new Date(f);if(isNaN(d))return null;var h=new Date(),e=h.getFullYear()-d.getFullYear(),m=h.getMonth()-d.getMonth();if(m<0||(m===0&&h.getDate()<d.getDate()))e--;return(e>=0&&e<130)?e:null;}
 function sexoLabel(v){return{mujer:'Mujer',varon:'Varón',otro:'Otro',na:'Prefiere no decir'}[v]||'—';}
@@ -215,12 +304,13 @@ function results(){
  if(cintAlto&&(oLevel==='normal'||oLevel==='na')) oLevel='evaluar';
  // Historia metabólica/cardíaca
  var hisFlags=[];
+ if(S.hist.diabetes==='si') hisFlags.push('Diabetes diagnosticada');
  if(S.hist.azucar==='si') hisFlags.push('Glucemia elevada informada');
  if(S.hist.higado==='si') hisFlags.push('Hígado graso');
  if(S.hist.colest==='alto'||S.hist.colMed==='si') hisFlags.push('Colesterol/triglicéridos elevados');
  if(S.hist.famCVD==='si') hisFlags.push('Antecedente familiar de infarto/ACV temprano');
  if(cintAlto) hisFlags.push('Perímetro de cintura elevado');
- var hisLevel=(S.hist.azucar==='si'||S.hist.colest==='alto'||S.hist.colMed==='si')?'evaluar':(hisFlags.length?'info':'ok');
+ var hisLevel=(S.hist.diabetes==='si'||S.hist.azucar==='si'||S.hist.colest==='alto'||S.hist.colMed==='si')?'evaluar':(hisFlags.length?'info':'ok');
  // Colorrectal — ajustado a la edad (USPSTF: 45–75 recomendar; 76–85 individualizar; >85 no de rutina)
  var coloEstado='na';
  if(e!=null&&e>=45){
@@ -268,8 +358,22 @@ function results(){
   if(S.mujer.sintomas.indexOf('sangradoPost')>=0) redFlags.push('Sangrado después de la menopausia');
  }
  var urgent=redFlags.length>0;
+ // Globorisk-LAC (riesgo CV a 10 años, Argentina) — laboratorio si hay colesterol+diabetes; si no, office-based
+ var cvSmoker=S.tox.tabaco==='actual';
+ var cholMg=parseFloat(S.med.colesterol);
+ var cv={modelo:'office',status:'',pct:null,cat:null,level:'na'};
+ if(cholMg>0 && (S.hist.diabetes==='si'||S.hist.diabetes==='no')){
+  var lab=globoriskLabAR(S.id.sexo,e,S.hist.diabetes==='si',cvSmoker,parseFloat(S.hta.sys),cholMg);
+  if(lab.status==='ok') cv={modelo:'lab',status:'ok',pct:lab.pct,cat:cvCat(lab.pct),level:cvLevel(lab.pct)};
+ }
+ if(cv.status!=='ok'){
+  var off=globoriskAR(S.id.sexo,e,cvSmoker,parseFloat(S.hta.sys),imc);
+  cv={modelo:'office',status:off.status,pct:(off.status==='ok'?off.pct:null),cat:(off.status==='ok'?cvCat(off.pct):null),level:(off.status==='ok'?cvLevel(off.pct):'na')};
+ }
  // Derivaciones
  var der=[];function add(x){if(der.indexOf(x)<0)der.push(x);}
+ if(cv.status==='ok'&&cv.pct>=20) add('Cardiología / manejo intensivo de factores de riesgo (riesgo CV a 10 años '+Math.round(cv.pct)+'%)');
+ if(S.hist.diabetes==='si') add('Control y seguimiento de diabetes');
  if(hLevel!=='bajo') add('Clínica médica / cardiología — control de presión arterial');
  if(dLevel==='elevado'||S.hist.azucar==='si') add('Laboratorio: glucemia en ayunas o HbA1c');
  if(S.hist.colest==='alto'||S.hist.colMed==='si') add('Laboratorio: perfil lipídico');
@@ -285,7 +389,7 @@ function results(){
  if(urgent) der.unshift('CONSULTA PRIORITARIA por señales de alarma');
  return {imc:imc,imcCat:imcCat,cint:(cint>0?cint:null),cintAlto:cintAlto,dScore:dScore,dIncompleto:imc==null,dLevel:dLevel,hLevel:hLevel,oLevel:oLevel,
   hisFlags:hisFlags,hisLevel:hisLevel,coloEstado:coloEstado,txFlags:txFlags,tLevel:tLevel,audit:ac,aLevel:aLevel,aPos:aPos,phq2:phq2,gad2:gad2,
-  eatLevel:eatLevel,riesgo:riesgo,protec:protec,mLevel:mLevel,mFlags:mFlags,cLevel:cLevel,cCount:cCount,redFlags:redFlags,urgent:urgent,der:der,edad:e};
+  eatLevel:eatLevel,riesgo:riesgo,protec:protec,mLevel:mLevel,mFlags:mFlags,cLevel:cLevel,cCount:cCount,redFlags:redFlags,urgent:urgent,cv:cv,der:der,edad:e};
 }
 
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -310,6 +414,7 @@ function scrIntro(){
   '<div class="field"><label>Fecha de nacimiento</label><input class="input" type="date" min="1900-01-01" max="'+hoy+'" data-in data-g="id" data-k="fechaNac" value="'+esc(S.id.fechaNac)+'"/></div>'+
   '<div class="field"><label>Sexo</label>'+sel('id','sexo',[['','Elegí una opción'],['mujer','Mujer'],['varon','Varón'],['otro','Otro'],['na','Prefiero no decir']])+'</div>'+
  '</div>'+
+ '<div class="field"><label>Correo electrónico</label><input class="input" type="email" inputmode="email" autocomplete="email" data-in data-g="id" data-k="email" placeholder="nombre@correo.com" value="'+esc(S.id.email)+'"/></div>'+
  '<div class="consent'+(S.consent?' on':'')+'" data-consent><span class="box">'+(S.consent?ic('check',15):'')+'</span><p>Leí y comprendí la información y acepto completar esta evaluación de forma voluntaria.<br><small>Al marcar esta casilla dejás constancia de tu conformidad. La marca equivale a tu firma.</small></p></div>'+
  '<div class="nav"><button class="btn btn-primary" id="cta" data-nav="next"'+(introOk()?'':' disabled')+'>Comenzar '+ic('cr')+'</button></div>'+
  (introOk()?'':'<div class="note">'+ic('lock',15)+'<span>Completá DNI, fecha de nacimiento, sexo y aceptá la casilla para continuar.</span></div>');
@@ -330,6 +435,8 @@ function scrHistoria(){
  Q('¿Alguna vez te dijeron que tenés hígado graso?','Esteatosis hepática',chips('hist','higado',YN))+
  Q('¿Alguna vez te midieron el colesterol o los triglicéridos? ¿Cómo estaban?','',chips('hist','colest',[['nunca','Nunca me los midieron'],['normal','Normales'],['alto','Alguno alto'],['norec','No recuerdo']]))+
  Q('¿Tomás medicación para bajar el colesterol o los triglicéridos?','',chips('hist','colMed',YN))+
+ Q('Colesterol total (opcional)','Si tenés un análisis reciente, en mg/dL. Habilita el riesgo cardiovascular con el modelo de laboratorio.','<div class="grid2">'+textIn('med','colesterol','Colesterol total (mg/dL)','decimal')+'<span></span></div>')+
+ Q('¿Tenés diagnóstico de diabetes?','',chips('hist','diabetes',YN))+
  Q('¿Alguien de tu familia tiene diabetes?','',chips('hist','famDiab',[['no','No'],['lejano','Sí, pero no padres ni hermanos'],['cercano','Sí, papás, hermanos o hijos']]))+
  Q('¿Algún familiar tuvo un infarto o un ACV siendo joven?','Antes de los 55 en hombres o de los 65 en mujeres',chips('hist','famCVD',YN));
  if(e!=null&&e>=45&&e<=85){
@@ -417,6 +524,13 @@ function scrCog(){
 function pill(l){var m={bajo:['green','Riesgo bajo'],normal:['green','En rango'],evaluar:['amber','A evaluar'],control:['red','Control indicado'],elevado:['red','Riesgo elevado'],info:['amber','Revisar'],ok:['green','Sin alertas'],na:['green','No corresponde']};var a=m[l]||['amber','Revisar'],i=a[0]==='green'?'cc':a[0]==='red'?'alert':'circle';return '<span class="pill '+a[0]+'">'+ic(i,13)+' '+a[1]+'</span>';}
 function row(icon,t,lv,p){return '<div class="rrow"><span class="ic">'+ic(icon,19)+'</span><div style="flex:1"><h4>'+esc(t)+'</h4><p>'+esc(p)+'</p>'+pill(lv)+'</div></div>';}
 function htaMsg(l){return l==='control'?'Ya tenés diagnóstico o tratamiento: seguí los controles con tu médico/a.':l==='evaluar'?'Presentás factores de riesgo: conviene medir y controlar la presión.':'Sin factores de riesgo destacados. Controlá la presión periódicamente.';}
+function eyeCard(k,label){
+ var img=S.ojos[k];
+ var box=img?'<img src="'+img+'" alt="'+esc(label)+'"/>':'Sin imagen';
+ var quitar=img?'<button type="button" class="eyebtn" data-eyeremove="'+k+'">Quitar</button>':'';
+ return '<div class="eyecard"><h5>'+esc(label)+'</h5><div class="eyeimg">'+box+'</div>'+
+  '<div class="eyebtns"><label class="eyebtn">'+(img?'Cambiar':'Cargar imagen')+'<input type="file" accept="image/*" data-eye="'+k+'"/></label>'+quitar+'</div></div>';
+}
 function scrRes(){
  var r=results(),e=r.edad;
  var hb=r.dLevel==='elevado'?'var(--redb)':'var(--greenb)', hn=r.dLevel==='elevado'?'var(--red)':'var(--green)';
@@ -425,8 +539,19 @@ function scrRes(){
  if(S.review) out+='<div class="banner">'+ic('shield',18)+'<span>Resultado compartido para revisión del equipo de salud.</span></div>';
  out+='<div class="eyebrow"><span class="ico">'+ic('file',16)+'</span> Resumen</div><h2 class="h2">'+(S.review?'Evaluación del afiliado':'Tu orientación de salud')+'</h2>';
  out+='<p class="sub">Tamizaje orientativo, no diagnóstico. El equipo de salud revisará las respuestas.</p>';
- out+='<div class="who"><span>DNI: <b>'+esc(S.id.dni||'—')+'</b></span><span>Edad: <b>'+(e==null?'—':e)+'</b></span><span>Sexo: <b>'+esc(sexoLabel(S.id.sexo))+'</b></span></div>';
+ out+='<div class="who"><span>DNI: <b>'+esc(S.id.dni||'—')+'</b></span><span>Edad: <b>'+(e==null?'—':e)+'</b></span><span>Sexo: <b>'+esc(sexoLabel(S.id.sexo))+'</b></span><span>Email: <b>'+esc(S.id.email||'—')+'</b></span></div>';
  out+='<div class="scorehero" style="background:'+hb+'"><div class="num" style="color:'+hn+'">'+r.dScore+'</div><div><strong style="font-size:15px">Puntaje de riesgo de diabetes (ADA–CDC)</strong><div style="font-size:13.5px;color:var(--muted);margin-top:2px">'+(r.dLevel==='elevado'?'Riesgo elevado. Se sugiere glucemia en ayunas o HbA1c.':'Riesgo bajo. Mantené controles habituales.')+'</div></div></div>';
+ // Riesgo CV Globorisk-LAC
+ if(r.cv.status==='ok'){
+  var cvbg=r.cv.level==='elevado'?'var(--redb)':r.cv.level==='evaluar'?'var(--ambb)':'var(--greenb)';
+  var cvcol=r.cv.level==='elevado'?'var(--red)':r.cv.level==='evaluar'?'var(--amb)':'var(--green)';
+  var modeloTxt=r.cv.modelo==='lab'?'laboratorio (colesterol)':'office-based (IMC)';
+  out+='<div class="scorehero" style="background:'+cvbg+'"><div class="num" style="color:'+cvcol+'">'+Math.round(r.cv.pct)+'%</div><div><strong style="font-size:15px">Riesgo cardiovascular a 10 años</strong><div style="font-size:13.5px;color:var(--muted);margin-top:2px">Globorisk-LAC '+modeloTxt+' · Argentina · riesgo '+r.cv.cat+'.</div></div></div>';
+  if(r.cv.modelo==='office') out+='<div class="note">'+ic('drop',15)+'<span>Si tenés un análisis de colesterol reciente, cargalo en "Tu historia de salud" para una estimación más precisa (modelo de laboratorio).</span></div>';
+ } else {
+  var cvmsg=r.cv.status==='sbp'?'Cargá tu presión arterial (sección 1) para estimar el riesgo cardiovascular a 10 años.':r.cv.status==='bmi'?'Cargá peso y talla para estimar el riesgo cardiovascular a 10 años.':r.cv.status==='edad'?'El riesgo cardiovascular Globorisk-LAC aplica entre los 40 y 74 años.':'El riesgo Globorisk-LAC requiere sexo mujer/varón para el cálculo.';
+  out+='<div class="note">'+ic('heart',15)+'<span>'+cvmsg+'</span></div>';
+ }
  out+=row('heart','Hipertensión arterial',r.hLevel,htaMsg(r.hLevel));
  out+=row('drop','Diabetes tipo 2',r.dLevel,(r.dIncompleto?'Cargá peso y talla para un puntaje completo. ':'')+(r.dLevel==='elevado'?'Se sugiere control de glucemia.':'Riesgo bajo según el cuestionario.'));
  var pesoMsg=r.imc!=null?('IMC '+r.imc.toFixed(1)+' — '+r.imcCat+'.'):'Sin datos de peso/talla.';
@@ -445,6 +570,10 @@ function scrRes(){
  out+=row('steth','ITS',S.its.sintomas==='si'?'evaluar':'ok',S.its.sintomas==='si'?'Síntomas actuales: conviene consultar.':'Sin alertas.');
  if(e!=null&&e>=60) out+=row('brain','Memoria y cognición',r.cLevel,r.cCount>=2?'Conviene una evaluación cognitiva.':'Sin señales de alarma.');
  if(r.der.length) out+='<div class="deriv"><h4>Derivaciones y estudios sugeridos</h4><ul>'+r.der.map(function(d){return '<li>'+esc(d)+'</li>';}).join('')+'</ul></div>';
+ out+='<div class="subdiv">Fondo de ojo (cámara no midriática)</div>';
+ out+='<p class="sub" style="margin-top:-6px">A completar por el equipo de salud.</p>';
+ out+='<div class="eyewrap">'+eyeCard('od','Ojo derecho (OD)')+eyeCard('oi','Ojo izquierdo (OI)')+'</div>';
+ out+='<textarea class="eyetext" data-eyetext placeholder="Interpretación del médico/a: por ejemplo, fondo de ojo normal; o retinopatía hipertensiva grado II, cruces AV, exudados, hemorragias, edema de papila, etc.">'+esc(S.ojos.texto)+'</textarea>';
  if(S.review){
   out+='<div class="nav"><button class="btn btn-ghost" data-act="print">'+ic('printer',17)+' Imprimir / PDF</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-primary" data-act="new">'+ic('rot',17)+' Nueva</button></div>';
  }else{
@@ -481,11 +610,12 @@ function downloadJSON(){
  var r=results();
  var pay={
   meta:{herramienta:'Evaluación de estado de salud OSTACC/ATACC',version:2,fecha:new Date().toISOString()},
-  afiliado:{dni:S.id.dni,fechaNacimiento:S.id.fechaNac,sexo:S.id.sexo,edad:r.edad},
+  afiliado:{dni:S.id.dni,email:S.id.email,fechaNacimiento:S.id.fechaNac,sexo:S.id.sexo,edad:r.edad},
   respuestas:{hta:S.hta,medidas:S.med,peso:S.obes,toxicos:S.tox,historia:S.hist,mujer:(S.id.sexo!=='varon'?S.mujer:null),animo:S.animo,alimentacion:S.comes,its:S.its,cognitivo:((r.edad!=null&&r.edad>=60)?S.cog:null)},
   resultados:{
    imc:r.imc?Number(r.imc.toFixed(1)):null, imcCategoria:r.imcCat, cintura:r.cint, cinturaElevada:r.cintAlto,
    diabetesADA:{puntaje:r.dScore, nivel:r.dLevel}, hipertensionNivel:r.hLevel,
+   globoriskLAC:{modelo:r.cv.modelo, pais:'Argentina', riesgo10a_pct:(r.cv.pct!=null?Number(r.cv.pct.toFixed(1)):null), categoria:r.cv.cat, estado:r.cv.status, colesterol_mgdl:(parseFloat(S.med.colesterol)||null), diabetes:(S.hist.diabetes||null), fuente:'CC-LAC, Lancet Reg Health Am 2022'},
    auditC:{puntaje:r.audit.score, positivo:r.audit.pos},
    phq2:r.phq2, gad2:r.gad2, animoNivel:r.aLevel,
    historiaNivel:r.hisLevel, historiaBanderas:r.hisFlags, colorrectalEstado:r.coloEstado,
@@ -493,7 +623,8 @@ function downloadJSON(){
    mujerNivel:r.mLevel, mujerBanderas:r.mFlags,
    cognitivoNivel:r.cLevel, banderasRojas:r.redFlags, urgente:r.urgent,
    derivaciones:r.der
-  }
+  },
+  fondoOjo:{interpretacion:S.ojos.texto, ojoDerecho:(S.ojos.od||null), ojoIzquierdo:(S.ojos.oi||null)}
  };
  var blob=new Blob([JSON.stringify(pay,null,2)],{type:'application/json'});
  var url=URL.createObjectURL(blob);
@@ -505,6 +636,7 @@ function downloadJSON(){
 }
 var app=document.getElementById('app');
 app.addEventListener('click',function(e){
+ var er=e.target.closest('[data-eyeremove]'); if(er){ S.ojos[er.dataset.eyeremove]=''; render(); return; }
  var c=e.target.closest('[data-chip]'); if(c){S[c.dataset.g][c.dataset.k]=c.dataset.v;render();return;}
  var mu=e.target.closest('[data-multi]'); if(mu){var arr=S[mu.dataset.g][mu.dataset.k],v=mu.dataset.v,ix=arr.indexOf(v);if(ix>=0)arr.splice(ix,1);else arr.push(v);render();return;}
  var t=e.target.closest('[data-toggle]'); if(t){S[t.dataset.g][t.dataset.k]=!S[t.dataset.g][t.dataset.k];render();return;}
@@ -513,6 +645,7 @@ app.addEventListener('click',function(e){
  var a=e.target.closest('[data-act]'); if(a){var k=a.dataset.act;if(k==='print')window.print();else if(k==='link')makeLink();else if(k==='json')downloadJSON();else if(k==='new'){location.hash='';reset();render();}return;}
 });
 app.addEventListener('input',function(e){
+ var et=e.target.closest('[data-eyetext]'); if(et){ S.ojos.texto=et.value; return; }
  var el=e.target.closest('[data-in]'); if(!el)return; if(el.tagName==='SELECT')return;
  var g=el.dataset.g,k=el.dataset.k,val=el.value;
  if(k==='dni') val=val.replace(/[^\d]/g,'');
@@ -522,6 +655,10 @@ app.addEventListener('input',function(e){
  if(g==='med'){var h=document.getElementById('imcHint');if(h){var r=results();h.textContent=r.imc!=null?('IMC '+r.imc.toFixed(1)+' · '+r.imcCat):'Cargá peso y talla para calcular el IMC';}}
 });
 app.addEventListener('change',function(e){
+ var fe=e.target.closest('input[type=file][data-eye]');
+ if(fe){ var k=fe.dataset.eye, f=fe.files&&fe.files[0];
+  if(f){ var rd=new FileReader(); rd.onload=function(){ S.ojos[k]=rd.result; render(); }; rd.readAsDataURL(f); }
+  return; }
  var el=e.target.closest('[data-in]'); if(!el)return;
  S[el.dataset.g][el.dataset.k]=el.value;
  if(el.dataset.g==='id'){var cta=document.getElementById('cta');if(cta)cta.disabled=!introOk();}
