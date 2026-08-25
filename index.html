@@ -102,6 +102,9 @@ body{font-family:var(--fb);color:var(--ink);background:var(--bg);min-height:100v
 .deriv h4{margin:0 0 8px;font-size:14.5px;font-weight:600;color:var(--teal)}
 .deriv ul{margin:0;padding-left:18px} .deriv li{font-size:14px;margin-bottom:4px}
 .footnote{font-size:12px;color:var(--muted);text-align:center;margin-top:22px;line-height:1.5}
+.meds{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;background:var(--teal-12);border-radius:12px;padding:12px 15px;margin:0 0 16px;font-size:13.5px}
+.meds span{color:var(--muted)} .meds span b{color:var(--ink)}
+@media(max-width:520px){.meds{grid-template-columns:1fr}}
 .eyewrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
 @media(max-width:520px){.eyewrap{grid-template-columns:1fr}}
 .eyecard{border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center}
@@ -540,6 +543,7 @@ function scrRes(){
  out+='<div class="eyebrow"><span class="ico">'+ic('file',16)+'</span> Resumen</div><h2 class="h2">'+(S.review?'Evaluación del afiliado':'Tu orientación de salud')+'</h2>';
  out+='<p class="sub">Tamizaje orientativo, no diagnóstico. El equipo de salud revisará las respuestas.</p>';
  out+='<div class="who"><span>DNI: <b>'+esc(S.id.dni||'—')+'</b></span><span>Edad: <b>'+(e==null?'—':e)+'</b></span><span>Sexo: <b>'+esc(sexoLabel(S.id.sexo))+'</b></span><span>Email: <b>'+esc(S.id.email||'—')+'</b></span></div>';
+ out+='<div class="meds">'+medList(r).map(function(x){return '<span>'+esc(x[0])+': <b>'+esc(x[1])+'</b></span>';}).join('')+'</div>';
  out+='<div class="scorehero" style="background:'+hb+'"><div class="num" style="color:'+hn+'">'+r.dScore+'</div><div><strong style="font-size:15px">Puntaje de riesgo de diabetes (ADA–CDC)</strong><div style="font-size:13.5px;color:var(--muted);margin-top:2px">'+(r.dLevel==='elevado'?'Riesgo elevado. Se sugiere glucemia en ayunas o HbA1c.':'Riesgo bajo. Mantené controles habituales.')+'</div></div></div>';
  // Riesgo CV Globorisk-LAC
  if(r.cv.status==='ok'){
@@ -575,11 +579,11 @@ function scrRes(){
  out+='<div class="eyewrap">'+eyeCard('od','Ojo derecho (OD)')+eyeCard('oi','Ojo izquierdo (OI)')+'</div>';
  out+='<textarea class="eyetext" data-eyetext placeholder="Interpretación del médico/a: por ejemplo, fondo de ojo normal; o retinopatía hipertensiva grado II, cruces AV, exudados, hemorragias, edema de papila, etc.">'+esc(S.ojos.texto)+'</textarea>';
  if(S.review){
-  out+='<div class="nav"><button class="btn btn-ghost" data-act="print">'+ic('printer',17)+' Imprimir / PDF</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-primary" data-act="new">'+ic('rot',17)+' Nueva</button></div>';
+  out+='<div class="nav"><button class="btn btn-ghost" data-act="doc">'+ic('file',17)+' Informe (Word)</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-primary" data-act="new">'+ic('rot',17)+' Nueva</button></div>';
  }else{
   out+='<div class="nav"><button class="btn btn-primary" data-act="link">'+ic('linkI',17)+' Enviar al equipo de salud</button></div>'+
-   '<div class="nav" style="margin-top:10px"><button class="btn btn-ghost" data-act="print">'+ic('printer',17)+' Imprimir / PDF</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-ghost" data-act="new">'+ic('rot',17)+' Reiniciar</button></div>'+
-   '<div class="note">'+ic('lock',15)+'<span>“Enviar al equipo de salud” genera un enlace con tus respuestas para que lo abra un profesional. Contiene datos personales: compartilo solo con OSTACC.</span></div>';
+   '<div class="nav" style="margin-top:10px"><button class="btn btn-ghost" data-act="doc">'+ic('file',17)+' Informe (Word)</button><button class="btn btn-ghost" data-act="json">'+ic('file',17)+' Datos (JSON)</button><button class="btn btn-ghost" data-act="new">'+ic('rot',17)+' Reiniciar</button></div>'+
+   '<div class="note">'+ic('lock',15)+'<span>“Enviar al equipo de salud” genera un enlace con tus respuestas para que lo abra un profesional.</span></div>';
  }
  out+='<p class="footnote">'+ic('lock',12)+' Información confidencial de OSTACC y ATACC. No se comparte con la empresa.</p>';
  return out;
@@ -606,6 +610,74 @@ function makeLink(){
  else prompt('Copiá este enlace:',url);
  location.hash='r='+b64;
 }
+
+function nivelTxt(l){var m={bajo:'Riesgo bajo',normal:'En rango',evaluar:'A evaluar',control:'Control indicado',elevado:'Riesgo elevado',info:'Revisar',ok:'Sin alertas',na:'No corresponde'};return m[l]||'Revisar';}
+function medList(r){
+ var ta=(S.hta.sys||S.hta.dia)?((S.hta.sys||'—')+'/'+(S.hta.dia||'—')+' mmHg'):'No registrada';
+ return [
+  ['Tensión arterial', ta],
+  ['Peso', S.med.peso?(S.med.peso+' kg'):'—'],
+  ['Talla', S.med.talla?(S.med.talla+' cm'):'—'],
+  ['IMC', r.imc!=null?(r.imc.toFixed(1)+' kg/m² ('+r.imcCat+')'):'—'],
+  ['Perímetro de cintura', r.cint!=null?(r.cint+' cm'+(r.cintAlto?' (elevada)':'')):'—'],
+  ['Colesterol total', S.med.colesterol?(S.med.colesterol+' mg/dL'):'—']
+ ];
+}
+function downloadDOC(){
+ var r=results(), e=r.edad, hoy=new Date().toLocaleDateString('es-AR');
+ function E(x){return esc(String(x==null?'':x));}
+ var rows=[];
+ rows.push(['Hipertensión arterial',nivelTxt(r.hLevel),htaMsg(r.hLevel)]);
+ rows.push(['Diabetes tipo 2',nivelTxt(r.dLevel),'Puntaje ADA-CDC '+r.dScore+'. '+(r.dLevel==='elevado'?'Se sugiere control de glucemia.':'Riesgo bajo según el cuestionario.')]);
+ rows.push(['Peso (IMC)',nivelTxt(r.oLevel), r.imc!=null?('IMC '+r.imc.toFixed(1)+' — '+r.imcCat+(r.cint!=null?('. Cintura '+r.cint+' cm'+(r.cintAlto?' (elevada)':'')):'')+'.'):'Sin datos de peso/talla.']);
+ rows.push(['Tu historia de salud',nivelTxt(r.hisLevel), r.hisFlags.length?r.hisFlags.join(' · '):'Sin antecedentes destacados.']);
+ if(r.coloEstado==='pend') rows.push(['Tamizaje colorrectal','A evaluar','Conviene sangre oculta anual o colonoscopía.']);
+ else if(r.coloEstado==='indiv') rows.push(['Tamizaje colorrectal','Revisar','76–85 años: decidir con el médico/a.']);
+ else if(r.coloEstado==='ok') rows.push(['Tamizaje colorrectal','Sin alertas','Estudios de intestino al día.']);
+ var txMsg=(r.txFlags.length?r.txFlags.join(' · '):'Sin alertas.')+(r.audit.score!=null?(' AUDIT-C '+r.audit.score+'.'):'');
+ rows.push(['Antecedentes tóxicos',nivelTxt(r.tLevel), txMsg]);
+ if(S.id.sexo!=='varon') rows.push(['Salud de la mujer',nivelTxt(r.mLevel), r.mFlags.length?r.mFlags.join(' · '):'Controles al día, sin síntomas.']);
+ rows.push(['Ánimo y bienestar',nivelTxt(r.aLevel), r.aLevel==='na'?'Sin responder.':(r.aPos?('PHQ-2 '+r.phq2+', GAD-2 '+r.gad2+'. Sugerir consulta de salud mental.'):'Sin señales de alarma.')]);
+ rows.push(['Alimentación',nivelTxt(r.eatLevel), r.eatLevel==='na'?'Sin responder.':(r.riesgo>=2?'Predominan hábitos de riesgo: orientación nutricional recomendada.':'Hábitos aceptables.')]);
+ rows.push(['ITS',S.its.sintomas==='si'?'A evaluar':'Sin alertas', S.its.sintomas==='si'?'Síntomas actuales: conviene consultar.':'Sin alertas.']);
+ if(e!=null&&e>=60) rows.push(['Memoria y cognición',nivelTxt(r.cLevel), r.cCount>=2?'Conviene una evaluación cognitiva.':'Sin señales de alarma.']);
+ var cvLine=r.cv.status==='ok'?(Math.round(r.cv.pct)+'% a 10 años — riesgo '+r.cv.cat+' (Globorisk-LAC '+(r.cv.modelo==='lab'?'laboratorio':'office-based')+', Argentina)'):('No calculado ('+(r.cv.status==='sbp'?'falta presión arterial':r.cv.status==='bmi'?'falta peso/talla':r.cv.status==='edad'?'fuera de 40–74 años':'requiere sexo mujer/varón')+')');
+ var rowsHtml=rows.map(function(x){return '<tr><td style="border:1px solid #999;padding:4px 8px"><b>'+E(x[0])+'</b></td><td style="border:1px solid #999;padding:4px 8px">'+E(x[1])+'</td><td style="border:1px solid #999;padding:4px 8px">'+E(x[2])+'</td></tr>';}).join('');
+ var derHtml=r.der.length?('<ul>'+r.der.map(function(d){return '<li>'+E(d)+'</li>';}).join('')+'</ul>'):'<p>—</p>';
+ function eyeCell(img,lab){return '<td style="width:50%;vertical-align:top;padding:6px;text-align:center"><b>'+lab+'</b><br/>'+(img?('<img src="'+img+'" style="width:260px;height:auto"/>'):'<i>Sin imagen</i>')+'</td>';}
+ var urg=r.urgent?('<p style="color:#b00;font-weight:bold">Señales de alarma: '+E(r.redFlags.join(' · '))+'. Requiere consulta prioritaria (guardia / 107 - 911).</p>'):'';
+ var interp=S.ojos.texto?E(S.ojos.texto).replace(/\n/g,'<br/>'):'________________________________________________________';
+ var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Informe</title>'
+  +'<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->'
+  +'<style>@page{size:A4;margin:2cm} body{font-family:Arial,sans-serif;font-size:11pt;color:#111} h1{font-size:16pt;color:#155} h2{font-size:12.5pt;color:#155;border-bottom:1px solid #ccc;padding-bottom:2px} table{border-collapse:collapse;width:100%} .muted{color:#555;font-size:9.5pt}</style>'
+  +'</head><body>'
+  +'<h1>Evaluación de estado de salud</h1><p class="muted">OSTACC · ATACC — Informe generado el '+hoy+'</p>'
+  +'<h2>Datos del afiliado</h2>'
+  +'<p><b>DNI:</b> '+E(S.id.dni||'—')+' &nbsp;&nbsp; <b>Email:</b> '+E(S.id.email||'—')+'<br/>'
+  +'<b>Fecha de nacimiento:</b> '+E(S.id.fechaNac||'—')+' &nbsp;&nbsp; <b>Edad:</b> '+(e==null?'—':e)+' &nbsp;&nbsp; <b>Sexo:</b> '+E(sexoLabel(S.id.sexo))+'</p>'
+  +'<h2>Mediciones registradas</h2>'
+  +'<table>'+medList(r).map(function(x){return '<tr><td style="border:1px solid #999;padding:4px 8px;width:40%"><b>'+E(x[0])+'</b></td><td style="border:1px solid #999;padding:4px 8px">'+E(x[1])+'</td></tr>';}).join('')+'</table>'
+  +urg
+  +'<h2>Puntajes principales</h2>'
+  +'<p><b>Riesgo de diabetes (ADA-CDC):</b> '+r.dScore+' — '+nivelTxt(r.dLevel)+'.<br/>'
+  +'<b>Riesgo cardiovascular:</b> '+cvLine+'.</p>'
+  +'<h2>Resumen por área</h2>'
+  +'<table><tr><td style="border:1px solid #999;padding:4px 8px;background:#eef"><b>Área</b></td><td style="border:1px solid #999;padding:4px 8px;background:#eef"><b>Estado</b></td><td style="border:1px solid #999;padding:4px 8px;background:#eef"><b>Observación</b></td></tr>'+rowsHtml+'</table>'
+  +'<h2>Derivaciones y estudios sugeridos</h2>'+derHtml
+  +'<h2>Fondo de ojo (cámara no midriática)</h2>'
+  +'<table><tr>'+eyeCell(S.ojos.od,'Ojo derecho (OD)')+eyeCell(S.ojos.oi,'Ojo izquierdo (OI)')+'</tr></table>'
+  +'<p><b>Interpretación del médico/a:</b><br/>'+interp+'</p>'
+  +'<p style="margin-top:28px">Firma y sello del profesional: ______________________________</p>'
+  +'<p class="muted">Tamizaje orientativo, no diagnóstico. Información confidencial de OSTACC y ATACC. No se comparte con la empresa.</p>'
+  +'</body></html>';
+ var blob=new Blob(['\ufeff'+html],{type:'application/msword'});
+ var url=URL.createObjectURL(blob);
+ var a=document.createElement('a'); a.href=url; a.download='informe_'+(S.id.dni||'sindni')+'_'+new Date().toISOString().slice(0,10)+'.doc';
+ document.body.appendChild(a); a.click(); document.body.removeChild(a);
+ setTimeout(function(){URL.revokeObjectURL(url);},1000);
+ toast('Informe Word descargado');
+}
+
 function downloadJSON(){
  var r=results();
  var pay={
@@ -642,7 +714,7 @@ app.addEventListener('click',function(e){
  var t=e.target.closest('[data-toggle]'); if(t){S[t.dataset.g][t.dataset.k]=!S[t.dataset.g][t.dataset.k];render();return;}
  if(e.target.closest('[data-consent]')){S.consent=!S.consent;render();return;}
  var nav=e.target.closest('[data-nav]'); if(nav){if(nav.dataset.nav==='next'){if(S.step==='intro'&&!introOk())return;go(1);}else go(-1);return;}
- var a=e.target.closest('[data-act]'); if(a){var k=a.dataset.act;if(k==='print')window.print();else if(k==='link')makeLink();else if(k==='json')downloadJSON();else if(k==='new'){location.hash='';reset();render();}return;}
+ var a=e.target.closest('[data-act]'); if(a){var k=a.dataset.act;if(k==='doc')downloadDOC();else if(k==='print')window.print();else if(k==='link')makeLink();else if(k==='json')downloadJSON();else if(k==='new'){location.hash='';reset();render();}return;}
 });
 app.addEventListener('input',function(e){
  var et=e.target.closest('[data-eyetext]'); if(et){ S.ojos.texto=et.value; return; }
